@@ -101,7 +101,7 @@ public class PlayerListener implements Listener {
 
                 Point point = event.getInteractedPoint();
 
-                Block block = event.getPlayer().getWorld().getBlock(point, event.getPlayer());
+                Block block = event.getPlayer().getWorld().getBlock(point);
                 block.setMaterial(VanillaMaterials.BEDROCK);
 
             }

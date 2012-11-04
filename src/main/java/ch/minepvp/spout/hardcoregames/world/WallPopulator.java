@@ -31,7 +31,7 @@ public class WallPopulator extends Populator{
         HardCoreGames.getInstance().getLogger().info("Distance : " + spawnPoint.distance( chunk.getBase() ) + " - ChunkRadius : " + (game.getChunkRadius() * 16));
 
 
-        if ( spawnPoint.distance( chunk.getBase() ) <= (game.getChunkRadius() * 16) ) {
+
 
 
             HardCoreGames.getInstance().getLogger().info("WallPopulator");
@@ -67,7 +67,7 @@ public class WallPopulator extends Populator{
 
             }
 
-        }
+
 
 
 
@@ -128,7 +128,7 @@ public class WallPopulator extends Populator{
 
             for ( int y = 0; y <= 15; y++ ) {
 
-                chunk.setBlockMaterial( x, y, z + i, VanillaMaterials.GLOWSTONE_BLOCK, (short) 0, chunk.getWorld() );
+                chunk.setBlockMaterial( x, y, z + i, VanillaMaterials.GLOWSTONE_BLOCK, (short) 0, null );
 
             }
 
@@ -145,7 +145,7 @@ public class WallPopulator extends Populator{
 
             for ( int y = 0; y <= 15; y++ ) {
 
-                chunk.setBlockMaterial( x, y, z + i, VanillaMaterials.GLASS, (short) 0, chunk.getWorld() );
+                chunk.setBlockMaterial( x, y, z + i, VanillaMaterials.GLASS, (short) 0, null );
 
             }
 
@@ -167,7 +167,7 @@ public class WallPopulator extends Populator{
 
             for ( int y = 0; y <= 15; y++ ) {
 
-                chunk.setBlockMaterial( x + i, y, z, VanillaMaterials.DIRT, (short) 0, chunk.getWorld() );
+                chunk.setBlockMaterial( x + i, y, z, VanillaMaterials.DIRT, (short) 0, null );
 
             }
 
@@ -184,7 +184,7 @@ public class WallPopulator extends Populator{
 
             for ( int y = 0; y <= 15; y++ ) {
 
-                chunk.setBlockMaterial( x + i, y, z, VanillaMaterials.BEDROCK, (short) 0, chunk.getWorld() );
+                chunk.setBlockMaterial( x + i, y, z, VanillaMaterials.BEDROCK, (short) 0, null );
 
             }
 

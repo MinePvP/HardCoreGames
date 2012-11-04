@@ -8,7 +8,6 @@ import ch.minepvp.spout.hardcoregames.config.GameSize;
 import ch.minepvp.spout.hardcoregames.config.GameStatus;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.entity.Player;
-import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 
 import ch.minepvp.spout.hardcoregames.task.GenerateWorldsTask;
@@ -20,7 +19,6 @@ import org.spout.api.util.OutwardIterator;
 import org.spout.vanilla.component.inventory.PlayerInventory;
 import org.spout.vanilla.component.living.Human;
 import org.spout.vanilla.data.GameMode;
-import org.spout.vanilla.material.VanillaMaterials;
 
 public class Game {
 	
@@ -175,7 +173,10 @@ public class Game {
         player.add(Human.class).getInventory().clear();
 
         player.add(Human.class).setGamemode(GameMode.SURVIVAL);
-        player.add(Human.class).getHealth().setHealth(health, player);
+        player.add(Human.class).getHealth().setHealth(health, null);
+
+
+
         // TODO set Food
 
     }
@@ -304,7 +305,7 @@ public class Game {
         }
 
         // Restore Healt
-        player.add(Human.class).getHealth().setHealth( (Integer)player.add(Human.class).getData().get("hcg_health"), player );
+        player.add(Human.class).getHealth().setHealth( (Integer)player.add(Human.class).getData().get("hcg_health"), null );
         // TODO restore food
 
         // Teleport back
