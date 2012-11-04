@@ -1,0 +1,8 @@
+name: HardCoreGames
+version: 0.1
+description: Play many HardCoreGames on the same Server
+author: surtic86
+website: https://github.com/MinePvP/HardCoreGames
+
+main: ch.minepvp.spout.hardcoregames.HardCoreGames
+platform: SERVER
