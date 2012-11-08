@@ -15,7 +15,7 @@ public class HardCoreGamesCommand {
         plugin = instance;
     }
 
-    @Command(aliases = {"hardcoregames", "hcg"}, usage = "", desc = "HardCoreGames Commands", min = 1, max = 1)
+    @Command(aliases = {"hardcoregames", "hcg", "game"}, usage = "", desc = "HardCoreGames Commands", min = 1, max = 1)
     @NestedCommand(HardCoreGamesCommands.class) // Subcommands
     public void hardcoregames(CommandContext args, CommandSource source) throws CommandException {
 

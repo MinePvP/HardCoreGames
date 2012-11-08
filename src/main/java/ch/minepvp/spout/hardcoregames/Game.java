@@ -6,11 +6,14 @@ import ch.minepvp.spout.hardcoregames.config.Config;
 import ch.minepvp.spout.hardcoregames.config.GameDifficulty;
 import ch.minepvp.spout.hardcoregames.config.GameSize;
 import ch.minepvp.spout.hardcoregames.config.GameStatus;
+import ch.minepvp.spout.hardcoregames.task.NoobProtectionTask;
+import com.sun.jdi.IntegerType;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.entity.Player;
 import org.spout.api.geo.World;
 
 import ch.minepvp.spout.hardcoregames.task.GenerateWorldsTask;
+import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.lang.Translation;
 import org.spout.api.math.IntVector3;
@@ -18,7 +21,10 @@ import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.util.OutwardIterator;
 import org.spout.vanilla.component.inventory.PlayerInventory;
 import org.spout.vanilla.component.living.Human;
+import org.spout.vanilla.component.misc.HealthComponent;
 import org.spout.vanilla.data.GameMode;
+import org.spout.vanilla.material.block.Solid;
+import org.spout.vanilla.source.HealthChangeCause;
 
 public class Game {
 	
@@ -35,7 +41,9 @@ public class Game {
 	private GameSize size;
     private Integer sizeInt;
     private Integer chunkRadius;
-    private ArrayList<Integer> saveSpawns;
+
+    private Integer minSpawnDistance = 40;
+    private ArrayList<Point> saveSpawns;
 
 	private GameDifficulty difficulty;
 
@@ -44,6 +52,8 @@ public class Game {
     private Integer health;
     private Integer food;
     private Boolean regen;
+
+    private Boolean noobProtection = true;
 
 	
 	public Game ( Player owner, GameDifficulty difficutly, GameSize size ) {
@@ -117,7 +127,10 @@ public class Game {
         chunkRadius = players.size() * sizeInt;
 
     }
-	
+
+    /**
+     *
+     */
 	public void startGame() {
 
         for ( Player player : getPlayers() ) {
@@ -126,23 +139,70 @@ public class Game {
 
         calculateChunkRadius();
 
-		GenerateWorldsTask task = new GenerateWorldsTask(this);
-		
-		plugin.getEngine().getScheduler().scheduleSyncDelayedTask(plugin, task, TaskPriority.HIGH);
+		GenerateWorldsTask task1 = new GenerateWorldsTask(this);
+		plugin.getEngine().getScheduler().scheduleSyncDelayedTask(plugin, task1, TaskPriority.HIGH);
 
-	}
+        NoobProtectionTask task2 = new NoobProtectionTask(this);
+        plugin.getEngine().getScheduler().scheduleAsyncDelayedTask(plugin, task2, getNoobProtectionTime(), TaskPriority.LOW);
 
-
-    public void calculateChunkRadius() {
-
-        chunkRadius = 3;
 
     }
 
+    /**
+     * Load the Noobprotection Time
+     *
+     * @return
+     */
+    private Long getNoobProtectionTime() {
 
+        if ( difficulty.equals(GameDifficulty.EASY) ) {
+            return Config.GAME_DIFFICULTY_EASY_NOOBPROTECTION_TIME.getLong() * 20;
+
+        } else if ( difficulty.equals(GameDifficulty.NORMAL) ) {
+            return Config.GAME_DIFFICULTY_NORMAL_NOOBPROTECTION_TIME.getLong() * 20;
+
+        } else if ( difficulty.equals(GameDifficulty.HARD) ) {
+            return Config.GAME_DIFFICULTY_HARD_NOOBPROTECTION_TIME.getLong() * 20;
+
+        } else if ( difficulty.equals(GameDifficulty.HARDCORE) ) {
+            return Config.GAME_DIFFICULTY_HARDCORE_NOOBPROTECTION_TIME.getLong() * 20;
+
+        }
+
+        return null;
+    }
+
+    /**
+     * Calculate the Chunk Radius for the Game over the Player Size
+     */
+    public void calculateChunkRadius() {
+
+        int chunks = (players.size() * sizeInt);
+
+        // only odd numbers
+        for ( int i = 1; i < 300; i = i + 2 ) {
+
+            if ( ( i * i ) >= chunks) {
+                chunkRadius = (( i - 1 ) / 2) + 1;
+                i = 301;
+
+            }
+
+        }
+
+
+        if ( chunkRadius < 4 ) {
+            chunkRadius = 5;
+        }
+
+    }
+
+    /**
+     * Teleport the Players to her Save Random Spawn Points
+     */
     public void teleportPlayersToWorld() {
 
-        setStatus( GameStatus.RUNNING );
+        int i = 0;
 
         // save Player and then Teleport it
         for ( Player player : getPlayers() ) {
@@ -152,7 +212,10 @@ public class Game {
                 savePlayer(player);
                 setPlayerStatsForStart(player);
 
-                teleportPlayerToRandomPosition(player);
+                saveSpawns.get(i).getWorld().getChunkFromBlock(saveSpawns.get(i));
+                player.teleport( saveSpawns.get(i) );
+
+                i++;
 
             } else {
 
@@ -162,9 +225,13 @@ public class Game {
 
         }
 
-
     }
 
+    /**
+     * Prepare the Player for Starting the Game
+     *
+     * @param player
+     */
     private void setPlayerStatsForStart( Player player ) {
 
         // TODO set Player Stats and Items for Game Start
@@ -173,100 +240,90 @@ public class Game {
         player.add(Human.class).getInventory().clear();
 
         player.add(Human.class).setGamemode(GameMode.SURVIVAL);
-        player.add(Human.class).getHealth().setHealth(health, null);
-
-
+        player.add(Human.class).getHealth().setHealth(health, HealthChangeCause.SPAWN);
 
         // TODO set Food
 
     }
 
-    private void teleportPlayerToRandomPosition( Player player ) {
+    /**
+     * Search Spawns for the Players
+     *
+     * @return
+     */
+    public void getRandomSpawns() {
 
-        // TODO Random
-        player.teleport( getWorld().getSpawnPoint().getPosition() );
+        plugin.getLogger().info("getRandomSpawns 1");
 
-    }
-
-
-    private Point getSaveRandomSpawns() {
-
-        Integer minSpawnDistance = 40; // TODO Scaled min SpawnDistance
-
+        saveSpawns = new ArrayList<Point>();
+        Point spawnPoint = world.getSpawnPoint().getPosition();
+        OutwardIterator oi = new OutwardIterator( spawnPoint.getBlockX(), 64, spawnPoint.getBlockZ(), chunkRadius * 16 );
 
         for ( Player player : players ) {
 
             Point saveSpawnPoint = null;
 
-
-            while ( saveSpawnPoint != null ) {
-
-
-                OutwardIterator oi = new OutwardIterator( world.getSpawnPoint().getPosition().getBlockX(),
-                                                          world.getSpawnPoint().getPosition().getBlockZ(), chunkRadius * 16 );
-
+            while ( saveSpawnPoint == null ) {
 
                 while ( oi.hasNext() ) {
 
-                    if ( !checkSpawnPoint( oi.next() ) ) {
-                          break;
-                    }
+                    IntVector3 intVector3 =  oi.next();
+                    Point point = new Point(world, intVector3.getX(), world.getSurfaceHeight(intVector3.getX(), intVector3.getZ()), intVector3.getZ() );
 
+                    if ( checkSpawnPoint( point ) ) {
 
-                    if ( saveSpawnPoint != null ) {
+                        plugin.getLogger().info("Fount Spawn Point for Player X : " + point.getBlockX() + " Y : " + point.getBlockY() + " Z : " + point.getBlockZ());
 
-
-
-
-                    } else {
-
-
+                        saveSpawnPoint =  point;
+                        saveSpawns.add(point);
+                        break;
 
                     }
-
 
                 }
 
-
-
             }
-
-
-
-
 
         }
 
-        return null;
-
-
     }
 
-    private Boolean checkSpawnPoint( IntVector3 point ) {
+    /**
+     * Check the SpawnPoint for Safety
+     *
+     * @param point
+     * @return
+     */
+    private Boolean checkSpawnPoint( Point point ) {
 
 
+        if ( saveSpawns.size() == 0 ) {
+            return true;
+        }
 
+        for ( Point point2 : saveSpawns ) {
 
+            if ( point2.distance(point) >= minSpawnDistance ) {
 
+                Block block = world.getBlock(point);
 
+                if ( block.getMaterial() instanceof Solid ) {
+                    return true;
+                }
 
+            }
 
-
-
-
+        }
 
         return false;
 
     }
 
-
-    private Point getRandomPosition() {
-
-        // TODO get a Random Position
-
-        return null;
-    }
-
+    /**
+     * Save all Player Data before a Game start
+     *
+     * @param player
+     */
     public void savePlayer( Player player ) {
 
         // Inventory
@@ -278,6 +335,11 @@ public class Game {
 
     }
 
+    /**
+     * Restore the Player
+     *
+     * @param player
+     */
     public void restorePlayer( Player player ) {
 
         // Restore Inventory
@@ -401,5 +463,12 @@ public class Game {
 	public void setDifficulty(GameDifficulty difficulty) {
 		this.difficulty = difficulty;
 	}
-	
+
+    public Boolean getNoobProtection() {
+        return noobProtection;
+    }
+
+    public void setNoobProtection(Boolean noobProtection) {
+        this.noobProtection = noobProtection;
+    }
 }

@@ -1,11 +1,13 @@
 package ch.minepvp.spout.hardcoregames.task;
 
 import ch.minepvp.spout.hardcoregames.config.GameDifficulty;
+import ch.minepvp.spout.hardcoregames.config.GameStatus;
 import ch.minepvp.spout.hardcoregames.world.WallPopulator;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.entity.Player;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
+import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.lang.Translation;
@@ -24,6 +26,7 @@ import org.spout.vanilla.data.Difficulty;
 import org.spout.vanilla.data.Dimension;
 import org.spout.vanilla.data.GameMode;
 import org.spout.vanilla.data.VanillaData;
+import org.spout.vanilla.thread.SpawnLoaderThread;
 import org.spout.vanilla.world.generator.VanillaGenerator;
 import org.spout.vanilla.world.generator.VanillaGenerators;
 import org.spout.vanilla.world.generator.normal.NormalGenerator;
@@ -33,9 +36,7 @@ public class GenerateWorldsTask implements Runnable{
 	private Game game;
 
 	public GenerateWorldsTask( Game game ) {
-		
 		this.game = game;
-		
 	}
 	
 
@@ -53,39 +54,31 @@ public class GenerateWorldsTask implements Runnable{
 
 		generateWorld();
 
-
-        //GenerateWallTask worldTask = new GenerateWallTask(game, game.getWorld(), game.getSizeInt());
-        //HardCoreGames.getInstance().getEngine().getScheduler().scheduleSyncDelayedTask(this, worldTask, TaskPriority.HIGH);
-
-
-
-
-        game.teleportPlayersToWorld();
-
         /*
         // Generate Nether
 		game.sendMessage("Starting Nether generation...");
 		generateNether();
-
-		GenerateWallTask netherTask = new GenerateWallTask(game.getNether(), size);
-		game.getNether().getTaskManager().scheduleSyncDelayedTask(this, netherTask);
 		*/
 
-        /*
         // Start Game
-        game.sendMessage("Starting Teleporting all Players to the new World..");
-        game.setStatus("running");
+        for ( Player player : game.getPlayers() ) {
+
+            if ( player.isOnline() ) {
+                player.sendMessage( ChatArguments.fromFormatString( Translation.tr("{{GOLD}}Starting Teleporting all Players to the new World..", player) ) );
+            }
+
+        }
+
+        game.setStatus( GameStatus.RUNNING );
+        game.getRandomSpawns();
         game.teleportPlayersToWorld();
-        */
+
 	}
 
     public void generateWorld() {
 
-
-
         NormalGenerator normalGenerator = new NormalGenerator();
         normalGenerator.addPopulators( new WallPopulator(game) );
-
 
         World world = HardCoreGames.getInstance().getEngine().loadWorld("hcg_" + game.getOwner().getName(), normalGenerator );
 
@@ -105,25 +98,48 @@ public class GenerateWorldsTask implements Runnable{
             world.getDataMap().put(VanillaData.DIFFICULTY, Difficulty.HARDCORE);
         }
 
-
         // Grab safe spawn if newly created world.
-        if (world.getAge() <= 0) {
-            world.setSpawnPoint(new Transform( new Point( normalGenerator.getSafeSpawn(world) ), Quaternion.IDENTITY, Vector3.ONE) );
+        world.setSpawnPoint(new Transform( new Point( normalGenerator.getSafeSpawn(world) ), Quaternion.IDENTITY, Vector3.ONE) );
+
+        // Preload Chunks
+        final int diameter = (game.getChunkRadius() << 1) + 1;
+        final int total = (diameter * diameter * diameter) / 6;
+        final int progressStep = total / 10;
+
+        SpawnLoaderThread[] loaderThreads = new SpawnLoaderThread[16];
+
+        for (int i = 0; i < 16; i++) {
+            loaderThreads[i] = new SpawnLoaderThread(total, progressStep, "Generating");
         }
 
-        world.getComponentHolder().add(NormalSky.class);
+        // Initialize the first chunks
+        Point point = world.getSpawnPoint().getPosition();
+        int cx = point.getBlockX() >> Chunk.BLOCKS.BITS;
+        int cy = point.getBlockY() >> Chunk.BLOCKS.BITS;
+        int cz = point.getBlockZ() >> Chunk.BLOCKS.BITS;
 
-        /*
-        //Preload Chunks
         OutwardIterator oi = new OutwardIterator();
-        oi.reset(0, 0, 0, 6); // TODO Radius
-
+        oi.reset(cx, cy, cz, game.getChunkRadius() );
 
         while (oi.hasNext()) {
             IntVector3 v = oi.next();
-            world.getChunk(v.getX(), v.getY(), v.getZ(), LoadOption.LOAD_GEN);
+            SpawnLoaderThread.addChunk(world, v.getX(), v.getY(), v.getZ());
         }
-        */
+
+        for (int i = 0; i < 16; i++) {
+            loaderThreads[i].start();
+        }
+
+        for (int i = 0; i < 16; i++) {
+            try {
+                loaderThreads[i].join();
+            } catch (InterruptedException ie) {
+                HardCoreGames.getInstance().getLogger().info("Interrupted when waiting for spawn area to load");
+            }
+        }
+
+        // Add Sky to World
+        world.getComponentHolder().add(NormalSky.class);
 
         game.setWorld(world);
 

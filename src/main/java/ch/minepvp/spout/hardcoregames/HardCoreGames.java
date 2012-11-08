@@ -1,5 +1,6 @@
 package ch.minepvp.spout.hardcoregames;
 
+import java.util.Collection;
 import java.util.logging.Level;
 
 import ch.minepvp.spout.hardcoregames.commands.HardCoreGamesCommand;
@@ -10,6 +11,9 @@ import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
 import org.spout.api.command.annotated.SimpleAnnotatedCommandExecutorFactory;
 import org.spout.api.command.annotated.SimpleInjector;
 import org.spout.api.exception.ConfigurationException;
+import org.spout.api.inventory.Inventory;
+import org.spout.api.inventory.ItemStack;
+import org.spout.api.inventory.recipe.Recipe;
 import org.spout.api.plugin.CommonPlugin;
 
 import ch.minepvp.spout.hardcoregames.config.Config;
@@ -70,7 +74,8 @@ public class HardCoreGames extends CommonPlugin {
         } catch (ConfigurationException e) {
             getLogger().log(Level.WARNING, "Error loading HardCoreGames configuration: ", e);
         }
-        
+
+
         getLogger().info("Enabled");
 	}
 	

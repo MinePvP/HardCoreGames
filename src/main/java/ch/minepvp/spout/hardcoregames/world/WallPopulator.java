@@ -1,19 +1,19 @@
 package ch.minepvp.spout.hardcoregames.world;
 
 import ch.minepvp.spout.hardcoregames.Game;
-import ch.minepvp.spout.hardcoregames.HardCoreGames;
-import com.sun.javadoc.AnnotationDesc;
 import org.spout.api.generator.Populator;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
 import org.spout.vanilla.material.VanillaMaterials;
-import org.spout.vanilla.world.generator.object.VanillaObjects;
 
 import java.util.Random;
 
 public class WallPopulator extends Populator{
 
     Game game;
+
+    Point p1 = null;
+    Point p2 = null;
 
     public WallPopulator( Game game ) {
         this.game = game;
@@ -22,95 +22,55 @@ public class WallPopulator extends Populator{
     @Override
     public void populate(Chunk chunk, Random random) {
 
-        if ( chunk.getY() > 8) {
+        // Calculate the Points
+        if ( p1 == null && p2 == null) {
+            calculateP1AndP2();
+        }
+
+        // Wall height in Chunks
+        if ( chunk.getY() > 6) {
             return;
         }
 
-        Point spawnPoint = chunk.getWorld().getSpawnPoint().getPosition();
+        // Is the Chunk between the two Points?
+        if ( chunk.getX() >= p1.getX() && chunk.getX() <= p2.getX() &&
+             chunk.getZ() >= p1.getZ() && chunk.getZ() <= p2.getZ() ) {
 
-        HardCoreGames.getInstance().getLogger().info("Distance : " + spawnPoint.distance( chunk.getBase() ) + " - ChunkRadius : " + (game.getChunkRadius() * 16));
+            //HardCoreGames.getInstance().getLogger().info("Generating Wall");
 
+            // Vertical plus
+            if ( chunk.getZ() == p1.getZ() ) {
 
-
-
-
-            HardCoreGames.getInstance().getLogger().info("WallPopulator");
-
-            if ( chunk.getZ() == (spawnPoint.getChunkZ() + game.getChunkRadius()) ) {
-
-                HardCoreGames.getInstance().getLogger().info("WallPopulator 1");
+                //HardCoreGames.getInstance().getLogger().info("WallPopulator 1");
                 generateWallHorizontal(chunk);
 
             }
 
             // Vertical mines
-            if ( chunk.getZ() == -(spawnPoint.getChunkZ() + game.getChunkRadius()) ) {
+            if ( chunk.getZ() == p2.getZ() ) {
 
-                HardCoreGames.getInstance().getLogger().info("WallPopulator 2");
-                generateWallHorizontal2(chunk);
+                //HardCoreGames.getInstance().getLogger().info("WallPopulator 2");
+                generateWallHorizontal(chunk);
 
             }
 
             // Horizontal plus
-            if ( chunk.getX() == (spawnPoint.getChunkX() + game.getChunkRadius()) ) {
+            if ( chunk.getX() == p1.getX() ) {
 
-                HardCoreGames.getInstance().getLogger().info("WallPopulator 3");
+                //HardCoreGames.getInstance().getLogger().info("WallPopulator 3");
                 generateWallVertical(chunk);
 
             }
 
             // Horizontal mines
-            if ( chunk.getX() == -(spawnPoint.getChunkX() + game.getChunkRadius()) ) {
+            if ( chunk.getX() == p2.getX() ) {
 
-                HardCoreGames.getInstance().getLogger().info("WallPopulator 4");
-                generateWallVertical2(chunk);
+                //HardCoreGames.getInstance().getLogger().info("WallPopulator 4");
+                generateWallVertical(chunk);
 
             }
 
-
-
-
-
-
-
-
-
-
-
-
-        /*
-        // Vertical plus
-        if ( chunk.getZ() == game.getChunkRadius() && ( chunk.getX() < game.getChunkRadius() || chunk.getX() > -game.getChunkRadius() ) ) {
-
-            //HardCoreGames.getInstance().getLogger().info("WallPopulator 1");
-            generateWallHorizontal(chunk);
-
         }
-
-        // Vertical mines
-        if ( chunk.getZ() == -game.getChunkRadius() && ( chunk.getX() < game.getChunkRadius() || chunk.getX() > -game.getChunkRadius() ) ) {
-
-            //HardCoreGames.getInstance().getLogger().info("WallPopulator 2");
-            generateWallHorizontal2(chunk);
-
-        }
-
-        // Horizontal plus
-        if ( chunk.getX() == game.getChunkRadius() && ( chunk.getZ() < game.getChunkRadius() || chunk.getZ() > -game.getChunkRadius() ) ) {
-
-            //HardCoreGames.getInstance().getLogger().info("WallPopulator 3");
-            generateWallVertical(chunk);
-
-        }
-
-        // Horizontal mines
-        if ( chunk.getX() == -game.getChunkRadius() && ( chunk.getZ() < game.getChunkRadius() || chunk.getZ() > -game.getChunkRadius() ) ) {
-
-            //HardCoreGames.getInstance().getLogger().info("WallPopulator 4");
-            generateWallVertical2(chunk);
-
-        }
-        */
 
     }
 
@@ -128,24 +88,7 @@ public class WallPopulator extends Populator{
 
             for ( int y = 0; y <= 15; y++ ) {
 
-                chunk.setBlockMaterial( x, y, z + i, VanillaMaterials.GLOWSTONE_BLOCK, (short) 0, null );
-
-            }
-
-        }
-
-    }
-
-    private void generateWallVertical2( Chunk chunk ) {
-
-        Integer x = chunk.getBlockX();
-        Integer z = chunk.getBlockZ();
-
-        for ( int i = 0; i <= 15; i++ ) {
-
-            for ( int y = 0; y <= 15; y++ ) {
-
-                chunk.setBlockMaterial( x, y, z + i, VanillaMaterials.GLASS, (short) 0, null );
+                chunk.setBlockMaterial( x, y, z + i, VanillaMaterials.BEDROCK, (short) 0, null );
 
             }
 
@@ -167,7 +110,7 @@ public class WallPopulator extends Populator{
 
             for ( int y = 0; y <= 15; y++ ) {
 
-                chunk.setBlockMaterial( x + i, y, z, VanillaMaterials.DIRT, (short) 0, null );
+                chunk.setBlockMaterial( x + i, y, z, VanillaMaterials.BEDROCK, (short) 0, null );
 
             }
 
@@ -175,20 +118,18 @@ public class WallPopulator extends Populator{
 
     }
 
-    private void generateWallHorizontal2( Chunk chunk ) {
+    private void calculateP1AndP2() {
 
-        Integer x = chunk.getBlockX();
-        Integer z = chunk.getBlockZ();
+        int x = game.getWorld().getSpawnPoint().getPosition().getChunkX() - game.getChunkRadius();
+        int z = game.getWorld().getSpawnPoint().getPosition().getChunkZ() - game.getChunkRadius();
 
-        for ( int i = 0; i <= 15; i++ ) {
+        p1 = new Point(game.getWorld(), x,0,z);
 
-            for ( int y = 0; y <= 15; y++ ) {
 
-                chunk.setBlockMaterial( x + i, y, z, VanillaMaterials.BEDROCK, (short) 0, null );
+        x = game.getWorld().getSpawnPoint().getPosition().getChunkX() + game.getChunkRadius();
+        z = game.getWorld().getSpawnPoint().getPosition().getChunkZ() + game.getChunkRadius();
 
-            }
-
-        }
+        p2 = new Point(game.getWorld(), x,0,z);
 
     }
 

@@ -15,12 +15,8 @@ public class GameManager {
 
     public GameManager() {
         plugin = HardCoreGames.getInstance();
-
-        // Games
         games = new ArrayList<Game>();
     }
-
-
 
     public void addGame( Game game ) {
         games.add(game);
@@ -42,21 +38,19 @@ public class GameManager {
 
         // Unload and Delete World
         plugin.getEngine().unloadWorld(game.getWorld(), true);
+        deleteFolder( game.getWorld().getDirectory() );
 
-        for ( File file : plugin.getEngine().getWorldFolders() ) {
+        // Nether
+        //plugin.getEngine().unloadWorld(game.getNether(), true);
+        //deleteFolder( game.getNether().getDirectory() );
 
-            if ( file.getName().equalsIgnoreCase( game.getWorld().getName() ) ) {
-
-                deleteFolder(file);
-
-            }
-
-        }
 
         games.remove(game);
     }
 
     public boolean deleteFolder(File file) {
+
+        //HardCoreGames.getInstance().getLogger().info("World delete : " + file.getAbsolutePath() );
 
         if (file.exists()) {
 

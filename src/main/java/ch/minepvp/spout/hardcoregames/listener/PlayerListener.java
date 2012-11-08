@@ -14,7 +14,10 @@ import org.spout.api.lang.Translation;
 import org.spout.vanilla.event.player.PlayerDeathEvent;
 
 import ch.minepvp.spout.hardcoregames.HardCoreGames;
+import org.spout.vanilla.event.player.PlayerFoodSaturationChangeEvent;
 import org.spout.vanilla.material.VanillaMaterials;
+import org.spout.vanilla.protocol.handler.player.EntityHealthChangeEvent;
+import org.spout.vanilla.source.HealthChangeCause;
 
 public class PlayerListener implements Listener {
 	
@@ -92,21 +95,23 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerInteractEvent( PlayerInteractEvent event ) {
+    public void onPlayerFoodSaturationChangeEvent( EntityHealthChangeEvent event ) {
 
+        if ( event.getEntity() instanceof Player) {
 
-        // TODO remove this testing things
-        if ( event.getHeldItem() != null ) {
-            if ( event.getHeldItem().getMaterial().equals(VanillaMaterials.WOODEN_AXE) ) {
+            Game game = gameManager.getGameByPlayer( (Player)event.getEntity() );
 
-                Point point = event.getInteractedPoint();
+            if ( game != null ) {
 
-                Block block = event.getPlayer().getWorld().getBlock(point);
-                block.setMaterial(VanillaMaterials.BEDROCK);
+                if ( event.getCause().equals( HealthChangeCause.REGENERATION ) ) {
+
+                    event.setCancelled(true);
+
+                }
 
             }
-        }
 
+        }
 
     }
 

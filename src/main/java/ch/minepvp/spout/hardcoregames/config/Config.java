@@ -18,30 +18,33 @@ public class Config extends ConfigurationHolderConfiguration{
     // Difficulty
     // Easy
     public static final ConfigurationHolder GAME_DIFFICULTY_EASY_HEALT_START = new ConfigurationHolder(20, "Game", "Difficulty", "Easy", "Health", "Start");
+    public static final ConfigurationHolder GAME_DIFFICULTY_EASY_FOOD_START = new ConfigurationHolder(20, "Game", "Difficulty", "Easy", "Food", "Start");
     public static final ConfigurationHolder GAME_DIFFICULTY_EASY_HEALT_REGEN = new ConfigurationHolder(true, "Game", "Difficulty", "Easy", "Health", "Regen", "OverFood");
 
-    public static final ConfigurationHolder GAME_DIFFICULTY_EASY_FOOD_START = new ConfigurationHolder(20, "Game", "Difficulty", "Easy", "Food", "Start");
-
+    public static final ConfigurationHolder GAME_DIFFICULTY_EASY_NOOBPROTECTION_TIME = new ConfigurationHolder(1500, "Game", "Difficulty", "Easy", "NoobProtection", "Time");
 
     // Normal
     public static final ConfigurationHolder GAME_DIFFICULTY_NORMAL_HEALT_START = new ConfigurationHolder(20, "Game", "Difficulty", "Normal", "Health", "Start");
+    public static final ConfigurationHolder GAME_DIFFICULTY_NORMAL_FOOD_START = new ConfigurationHolder(20, "Game", "Difficulty", "Normal", "Food", "Start");
     public static final ConfigurationHolder GAME_DIFFICULTY_NORMAL_HEALT_REGEN = new ConfigurationHolder(true, "Game", "Difficulty", "Normal", "Health", "Regen", "OverFood");
 
-    public static final ConfigurationHolder GAME_DIFFICULTY_NORMAL_FOOD_START = new ConfigurationHolder(20, "Game", "Difficulty", "Normal", "Food", "Start");
+    public static final ConfigurationHolder GAME_DIFFICULTY_NORMAL_NOOBPROTECTION_TIME = new ConfigurationHolder(1200, "Game", "Difficulty", "Normal", "NoobProtection", "Time");
 
 
     // Hard
     public static final ConfigurationHolder GAME_DIFFICULTY_HARD_HEALT_START = new ConfigurationHolder(20, "Game", "Difficulty", "Hard", "Health", "Start");
+    public static final ConfigurationHolder GAME_DIFFICULTY_HARD_FOOD_START = new ConfigurationHolder(20, "Game", "Difficulty", "Hard", "Food", "Start");
     public static final ConfigurationHolder GAME_DIFFICULTY_HARD_HEALT_REGEN = new ConfigurationHolder(false, "Game", "Difficulty", "Hard", "Health", "Regen", "OverFood");
 
-    public static final ConfigurationHolder GAME_DIFFICULTY_HARD_FOOD_START = new ConfigurationHolder(20, "Game", "Difficulty", "Hard", "Food", "Start");
+    public static final ConfigurationHolder GAME_DIFFICULTY_HARD_NOOBPROTECTION_TIME = new ConfigurationHolder(900, "Game", "Difficulty", "Hard", "NoobProtection", "Time");
 
 
     // Hardcore
     public static final ConfigurationHolder GAME_DIFFICULTY_HARDCORE_HEALT_START = new ConfigurationHolder(10, "Game", "Difficulty", "HardCore", "Health", "Start");
+    public static final ConfigurationHolder GAME_DIFFICULTY_HARDCORE_FOOD_START = new ConfigurationHolder(10, "Game", "Difficulty", "HardCore", "Food", "Start");
     public static final ConfigurationHolder GAME_DIFFICULTY_HARDCORE_HEALT_REGEN = new ConfigurationHolder(false, "Game", "Difficulty", "HardCore", "Health", "Regen", "OverFood");
 
-    public static final ConfigurationHolder GAME_DIFFICULTY_HARDCORE_FOOD_START = new ConfigurationHolder(10, "Game", "Difficulty", "HardCore", "Food", "Start");
+    public static final ConfigurationHolder GAME_DIFFICULTY_HARDCORE_NOOBPROTECTION_TIME = new ConfigurationHolder(600, "Game", "Difficulty", "HardCore", "NoobProtection", "Time");
 
 
     public Config(File dataFolder) {

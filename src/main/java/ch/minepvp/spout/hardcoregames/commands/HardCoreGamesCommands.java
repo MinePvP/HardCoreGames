@@ -34,23 +34,28 @@ public class HardCoreGamesCommands {
         source.sendMessage( ChatStyle.DARK_GREEN, "-----------------------------------------------------" );
 
         if ( source.hasPermission("hcg.create") ) {
-            source.sendMessage( ChatStyle.BLUE, "/hcg create <easy|normal|hard|hardcore> <tiny|small|medium|big>" );
+            source.sendMessage( ChatStyle.BLUE, "/game create <easy|normal|hard|hardcore> <tiny|small|medium|big>" );
             source.sendMessage( ChatArguments.fromFormatString(Translation.tr("Create a new HardCore Game", source)) );
         }
 
         if ( source.hasPermission("hcg.list") ) {
-            source.sendMessage( ChatStyle.BLUE, "/hcg list" );
+            source.sendMessage( ChatStyle.BLUE, "/game list" );
             source.sendMessage( ChatArguments.fromFormatString( Translation.tr("List all running Games", source) ) );
         }
 
         if ( source.hasPermission("hcg.join") ) {
-            source.sendMessage( ChatStyle.BLUE, "/hcg join <player>" );
+            source.sendMessage( ChatStyle.BLUE, "/game join <player>" );
             source.sendMessage( ChatArguments.fromFormatString( Translation.tr("Join a Game over a Player", source) ) );
         }
 
         if ( source.hasPermission("hcg.leave") ) {
-            source.sendMessage( ChatStyle.BLUE, "/hcg leave" );
+            source.sendMessage( ChatStyle.BLUE, "/game leave" );
             source.sendMessage( ChatArguments.fromFormatString( Translation.tr("Leave the Game", source) ) );
+        }
+
+        if ( source.hasPermission("hcg.start") ) {
+            source.sendMessage( ChatStyle.BLUE, "/game start" );
+            source.sendMessage( ChatArguments.fromFormatString( Translation.tr("Start the Game", source) ) );
         }
 
         source.sendMessage( ChatStyle.DARK_GREEN, "-----------------------------------------------------" );
@@ -236,6 +241,7 @@ public class HardCoreGamesCommands {
         Player player = plugin.getEngine().getPlayer( source.getName(), true );
 
         Game game = new Game(player, GameDifficulty.EASY, GameSize.TINY);
+        gameManager.addGame(game);
         game.startGame();
 
 
