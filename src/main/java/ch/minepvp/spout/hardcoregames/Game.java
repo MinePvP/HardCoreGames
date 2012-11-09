@@ -1,5 +1,7 @@
 package ch.minepvp.spout.hardcoregames;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 
 import ch.minepvp.spout.hardcoregames.config.Config;
@@ -41,6 +43,8 @@ public class Game {
 	private GameSize size;
     private Integer sizeInt;
     private Integer chunkRadius;
+    private Point p1;
+    private Point p2;
 
     private Integer minSpawnDistance = 40;
     private ArrayList<Point> saveSpawns;
@@ -138,6 +142,7 @@ public class Game {
         }
 
         calculateChunkRadius();
+        calculateP1AndP2();
 
 		GenerateWorldsTask task1 = new GenerateWorldsTask(this);
 		plugin.getEngine().getScheduler().scheduleSyncDelayedTask(plugin, task1, TaskPriority.HIGH);
@@ -190,10 +195,27 @@ public class Game {
 
         }
 
-
         if ( chunkRadius < 4 ) {
             chunkRadius = 5;
         }
+
+    }
+
+    /**
+     * Calculate the ege Points of the Battlefield
+     */
+    private void calculateP1AndP2() {
+
+        int x = getWorld().getSpawnPoint().getPosition().getChunkX() - getChunkRadius();
+        int z = getWorld().getSpawnPoint().getPosition().getChunkZ() - getChunkRadius();
+
+        p1 = new Point(getWorld(), x,0,z);
+
+
+        x = getWorld().getSpawnPoint().getPosition().getChunkX() + getChunkRadius();
+        z = getWorld().getSpawnPoint().getPosition().getChunkZ() + getChunkRadius();
+
+        p2 = new Point(getWorld(), x,0,z);
 
     }
 
@@ -228,6 +250,27 @@ public class Game {
     }
 
     /**
+     * Get a Random Integer between min. and max.
+     *
+     * @param min
+     * @param max
+     * @return
+     */
+    private Integer randomBetween( Integer min, Integer max ) {
+
+        SecureRandom secRandom = null;
+
+        try {
+            secRandom = SecureRandom.getInstance("SHA1PRNG");
+        } catch (NoSuchAlgorithmException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return secRandom.nextInt( max - min + 1 )+min;
+    }
+
+    /**
      * Prepare the Player for Starting the Game
      *
      * @param player
@@ -253,11 +296,7 @@ public class Game {
      */
     public void getRandomSpawns() {
 
-        plugin.getLogger().info("getRandomSpawns 1");
-
         saveSpawns = new ArrayList<Point>();
-        Point spawnPoint = world.getSpawnPoint().getPosition();
-        OutwardIterator oi = new OutwardIterator( spawnPoint.getBlockX(), 64, spawnPoint.getBlockZ(), chunkRadius * 16 );
 
         for ( Player player : players ) {
 
@@ -265,20 +304,17 @@ public class Game {
 
             while ( saveSpawnPoint == null ) {
 
-                while ( oi.hasNext() ) {
+                int x = randomBetween( p1.getBlockX(), p2.getBlockX() );
+                int z = randomBetween( p1.getBlockZ(), p2.getBlockZ() );
 
-                    IntVector3 intVector3 =  oi.next();
-                    Point point = new Point(world, intVector3.getX(), world.getSurfaceHeight(intVector3.getX(), intVector3.getZ()), intVector3.getZ() );
+                Point point = new Point(world, x, 1, z);
 
-                    if ( checkSpawnPoint( point ) ) {
+                if ( checkSpawnPoint( point ) ) {
 
-                        plugin.getLogger().info("Fount Spawn Point for Player X : " + point.getBlockX() + " Y : " + point.getBlockY() + " Z : " + point.getBlockZ());
+                    plugin.getLogger().info("Fount Spawn Point for Player X : " + point.getBlockX() + " Y : " + point.getBlockY() + " Z : " + point.getBlockZ());
 
-                        saveSpawnPoint =  point;
-                        saveSpawns.add(point);
-                        break;
-
-                    }
+                    saveSpawnPoint = point;
+                    saveSpawns.add(point);
 
                 }
 
@@ -470,5 +506,21 @@ public class Game {
 
     public void setNoobProtection(Boolean noobProtection) {
         this.noobProtection = noobProtection;
+    }
+
+    public Point getP2() {
+        return p2;
+    }
+
+    public void setP2(Point p2) {
+        this.p2 = p2;
+    }
+
+    public Point getP1() {
+        return p1;
+    }
+
+    public void setP1(Point p1) {
+        this.p1 = p1;
     }
 }
