@@ -30,7 +30,7 @@ public class HardCoreGamesCommands {
     public void help(CommandContext args, CommandSource source) throws CommandException {
 
         source.sendMessage( ChatStyle.DARK_GREEN, "-----------------------------------------------------" );
-        source.sendMessage( ChatStyle.DARK_GREEN, "Help" );
+        source.sendMessage( ChatStyle.YELLOW, "Help" );
         source.sendMessage( ChatStyle.DARK_GREEN, "-----------------------------------------------------" );
 
         if ( source.hasPermission("hcg.create") ) {
@@ -104,7 +104,7 @@ public class HardCoreGamesCommands {
         Game game = new Game( player, difficutly, size );
         gameManager.addGame(game);
 
-        source.sendMessage( ChatArguments.fromFormatString( Translation.tr("The Game is createt other Players can now Join the Game!", source) ) );
+        source.sendMessage( ChatArguments.fromFormatString( Translation.tr("{{GOLD}}The Game is createt other Players can now Join the Game!", source) ) );
 
     }
 
@@ -120,13 +120,13 @@ public class HardCoreGamesCommands {
         }
 
         source.sendMessage( ChatStyle.DARK_GREEN, "-----------------------------------------------------" );
-        source.sendMessage( ChatStyle.DARK_GREEN, "List all Games" );
+        source.sendMessage( ChatStyle.YELLOW, "List all Games" );
         source.sendMessage( ChatStyle.DARK_GREEN, "-----------------------------------------------------" );
 
         for ( Game game : gameManager.getGames() ) {
 
-            source.sendMessage( ChatArguments.fromFormatString( Translation.tr("Owner : %0 Status : %1", source, game.getOwner().getName(), game.getStatus() ) ) );
-            source.sendMessage( ChatArguments.fromFormatString( Translation.tr("Settings : Difficulty %0 Size %1", source, game.getDifficulty(), game.getSize() ) ) );
+            source.sendMessage( ChatArguments.fromFormatString( Translation.tr("{{GRAY}}Owner : {{GOLD}}%0 {{GRAY}}Status : {{GOLD}}%1", source, game.getOwner().getName(), game.getStatus() ) ) );
+            source.sendMessage( ChatArguments.fromFormatString( Translation.tr("{{GRAY}}Settings : {{GRAY}}Difficulty {{GOLD}}%0 {{GRAY}}Size {{GOLD}}%1", source, game.getDifficulty(), game.getSize() ) ) );
 
             String players = "";
 
@@ -136,7 +136,7 @@ public class HardCoreGamesCommands {
 
             }
 
-            source.sendMessage( ChatArguments.fromFormatString( Translation.tr("Players : %0", source, players ) ) );
+            source.sendMessage( ChatArguments.fromFormatString( Translation.tr("{{GRAY}}Players : {{WHITE}}%0", source, players ) ) );
 
             source.sendMessage( ChatStyle.DARK_GREEN, "-----------------------------------------------------" );
         }
@@ -155,21 +155,21 @@ public class HardCoreGamesCommands {
         }
 
         if ( gameManager.getGameByPlayer( player ) != null ) {
-            source.sendMessage( ChatArguments.fromFormatString(Translation.tr("You are allready in a Game!", source)) );
+            source.sendMessage( ChatArguments.fromFormatString(Translation.tr("{{RED}}You are allready in a Game!", source)) );
             return;
         }
 
         Player player2 = plugin.getEngine().getPlayer( args.getString(0), true );
 
         if (  player2 == null ) {
-            source.sendMessage( ChatArguments.fromFormatString(Translation.tr("The Player was not found!", source)) );
+            source.sendMessage( ChatArguments.fromFormatString(Translation.tr("{{RED}}The Player was not found!", source)) );
             return;
         }
 
         Game game = gameManager.getGameByPlayer( player2 );
 
         if ( game == null ) {
-            source.sendMessage( ChatArguments.fromFormatString(Translation.tr("The Player is not in a Game!!", source)) );
+            source.sendMessage( ChatArguments.fromFormatString(Translation.tr("{{RED}}The Player is not in a Game!!", source)) );
             return;
         }
 
@@ -177,7 +177,7 @@ public class HardCoreGamesCommands {
         //Translation.broadcast("{{GOLD}}%0 has joined the Game", game.getPlayers(), player.getName() );
         game.addPlayer( player );
 
-        source.sendMessage( ChatArguments.fromFormatString(Translation.tr("You joined the Game!", source)) );
+        source.sendMessage( ChatArguments.fromFormatString(Translation.tr("{{GOLD}}You joined the Game!", source)) );
     }
 
     @Command(aliases = {"leave"}, usage = "", desc = "")
@@ -194,13 +194,13 @@ public class HardCoreGamesCommands {
         Game game = gameManager.getGameByPlayer( player );
 
         if ( game == null ) {
-            source.sendMessage( ChatArguments.fromFormatString(Translation.tr("You are not in a Game!", source)) );
+            source.sendMessage( ChatArguments.fromFormatString(Translation.tr("{{RED}}You are not in a Game!", source)) );
             return;
         }
 
         game.removePlayer(player);
 
-        source.sendMessage( ChatArguments.fromFormatString(Translation.tr("You leave the Game!", source)) );
+        source.sendMessage( ChatArguments.fromFormatString(Translation.tr("{{GOLD}}You leave the Game!", source)) );
     }
 
     @Command(aliases = {"start"}, usage = "", desc = "")
@@ -217,17 +217,17 @@ public class HardCoreGamesCommands {
         Game game = gameManager.getGameByPlayer( player );
 
         if ( game == null ) {
-            source.sendMessage( ChatArguments.fromFormatString(Translation.tr("You are not in a Game!", source)) );
+            source.sendMessage( ChatArguments.fromFormatString(Translation.tr("{{RED}}You are not in a Game!", source)) );
             return;
         }
 
         if ( game.getPlayers().size() == 1 ) {
-            source.sendMessage( ChatArguments.fromFormatString(Translation.tr("You are alone in the Game!", source)) );
+            source.sendMessage( ChatArguments.fromFormatString(Translation.tr("{{RED}}You are alone in the Game!", source)) );
             return;
         }
 
         if ( game.getStatus().equals("running") ) {
-            source.sendMessage( ChatArguments.fromFormatString(Translation.tr("The Game is allready running!", source)) );
+            source.sendMessage( ChatArguments.fromFormatString(Translation.tr("{{RED}}The Game is allready running!", source)) );
             return;
         }
 
