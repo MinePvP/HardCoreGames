@@ -1,6 +1,7 @@
 package ch.minepvp.spout.hardcoregames.listener;
 
 import ch.minepvp.spout.hardcoregames.Game;
+import ch.minepvp.spout.hardcoregames.config.GameStatus;
 import ch.minepvp.spout.hardcoregames.manager.GameManager;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.entity.Player;
@@ -39,9 +40,13 @@ public class PlayerListener implements Listener {
 
         if ( game != null ) {
 
-            for ( Player toPlayer : game.getPlayers() ) {
+            if ( game.getStatus().equals( GameStatus.RUNNING ) ) {
 
-                player.sendMessage(ChatArguments.fromFormatString(Translation.tr("[Game] %1 : %2", player, player.getName(), event.getMessage().getPlainString())));
+                for ( Player toPlayer : game.getPlayers() ) {
+
+                    player.sendMessage(ChatArguments.fromFormatString(Translation.tr("[{{GOLD}}Game{{WHITE}}] %1 : %2", player, player.getName(), event.getMessage().getPlainString())));
+
+                }
 
             }
 
@@ -54,28 +59,25 @@ public class PlayerListener implements Listener {
 
         Player player = event.getPlayer();
 
-        // TODO DELETE
-        player.sendMessage("DEBUG: YOU ARE DEAD");
-
-
         Game game = gameManager.getGameByPlayer(player);
 
         if ( game != null ) {
 
             game.removePlayer( player );
             game.restorePlayer(player);
+            player.sendMessage( ChatArguments.fromFormatString( Translation.tr("{{RED}}You have loos the Game!", player) ) );
 
             if ( game.getPlayers().size() > 1 ) {
 
                 for ( Player toPlayer : game.getPlayers() ) {
 
-                    player.sendMessage( ChatArguments.fromFormatString( Translation.tr("[Game] %1 has died! %2 left...", player, player.getName(), game.getPlayers().size() ) ) );
+                    player.sendMessage( ChatArguments.fromFormatString( Translation.tr("{{GOLD}}[Game] {{RED}}%1 {{GOLD}}has died! {{RED}}%2 {{GOLD}}left...", player, player.getName(), game.getPlayers().size() ) ) );
 
                 }
 
                 for ( Player toPlayer : game.getPlayers() ) {
 
-                    toPlayer.sendMessage( ChatArguments.fromFormatString( Translation.tr("%1 has died! %2 left...", toPlayer, player.getName(), game.getPlayers().size()) ) );
+                    toPlayer.sendMessage( ChatArguments.fromFormatString( Translation.tr("{{RED}}%1 {{GOLD}}has died! {{RED}}%2 {{GOLD}}left...", toPlayer, player.getName(), game.getPlayers().size()) ) );
 
                 }
 
@@ -83,7 +85,7 @@ public class PlayerListener implements Listener {
 
                 Player winner = game.getPlayers().get(0);
 
-                winner.sendMessage( ChatArguments.fromFormatString( Translation.tr("You have won the Game!", winner) ) );
+                winner.sendMessage( ChatArguments.fromFormatString( Translation.tr("{{GOLD}}You have won the Game!", winner) ) );
 
                 game.restorePlayer(winner);
                 gameManager.removeGame(game);

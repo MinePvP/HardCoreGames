@@ -160,21 +160,23 @@ public class Game {
      */
     private Long getNoobProtectionTime() {
 
+        Long intervall = null;
+
         if ( difficulty.equals(GameDifficulty.EASY) ) {
-            return Config.GAME_DIFFICULTY_EASY_NOOBPROTECTION_TIME.getLong() * 20;
+            intervall = Config.GAME_DIFFICULTY_EASY_NOOBPROTECTION_TIME.getLong();
 
         } else if ( difficulty.equals(GameDifficulty.NORMAL) ) {
-            return Config.GAME_DIFFICULTY_NORMAL_NOOBPROTECTION_TIME.getLong() * 20;
+            intervall = Config.GAME_DIFFICULTY_NORMAL_NOOBPROTECTION_TIME.getLong();
 
         } else if ( difficulty.equals(GameDifficulty.HARD) ) {
-            return Config.GAME_DIFFICULTY_HARD_NOOBPROTECTION_TIME.getLong() * 20;
+            intervall = Config.GAME_DIFFICULTY_HARD_NOOBPROTECTION_TIME.getLong();
 
         } else if ( difficulty.equals(GameDifficulty.HARDCORE) ) {
-            return Config.GAME_DIFFICULTY_HARDCORE_NOOBPROTECTION_TIME.getLong() * 20;
+            intervall = Config.GAME_DIFFICULTY_HARDCORE_NOOBPROTECTION_TIME.getLong();
 
         }
 
-        return null;
+        return ( intervall * 20 ) * 60;
     }
 
     /**
@@ -283,10 +285,22 @@ public class Game {
         player.add(Human.class).getInventory().clear();
 
         player.add(Human.class).setGamemode(GameMode.SURVIVAL);
-        player.add(Human.class).getHealth().setHealth(health, HealthChangeCause.SPAWN);
 
+        // Set Health and Food
+        player.add(HealthComponent.class).setHealth(health, HealthChangeCause.SPAWN);
         // TODO set Food
 
+
+
+        // TODO set Items
+
+
+
+        // TODO set Armor
+        //player.add(Human.class).getInventory().getArmor().setHelmet();
+        //player.add(Human.class).getInventory().getArmor().setChestPlate();
+        //player.add(Human.class).getInventory().getArmor().setLeggings();
+        //player.add(Human.class).getInventory().getArmor().setBoots();
     }
 
     /**
@@ -388,6 +402,7 @@ public class Game {
         player.add(Human.class).getInventory().getArmor().setChestPlate(inventory.getArmor().getChestPlate());
         player.add(Human.class).getInventory().getArmor().setHelmet(inventory.getArmor().getHelmet());
 
+
         // Main
         player.add(Human.class).getInventory().getMain().clear();
 
@@ -403,14 +418,13 @@ public class Game {
         }
 
         // Restore Healt
-        player.add(Human.class).getHealth().setHealth( (Integer)player.add(Human.class).getData().get("hcg_health"), null );
+        player.add(HealthComponent.class).setHealth( (Integer)player.add(Human.class).getData().get("hcg_health"), HealthChangeCause.SPAWN );
         // TODO restore food
 
         // Teleport back
-        //player.teleport( (Point)player.add(Human.class).getData().get("hcg_point") );
+        player.teleport( (Point)player.add(Human.class).getData().get("hcg_point") );
 
-        player.sendMessage("DEBUGE : DELETE");
-        player.teleport(plugin.getEngine().getWorld("world").getSpawnPoint());
+        //player.teleport(plugin.getEngine().getWorld("world").getSpawnPoint());
 
 
     }
