@@ -2,6 +2,7 @@ package ch.minepvp.spout.hardcoregames.manager;
 
 import ch.minepvp.spout.hardcoregames.Game;
 import ch.minepvp.spout.hardcoregames.HardCoreGames;
+import ch.minepvp.spout.hardcoregames.config.GameStatus;
 import org.spout.api.entity.Player;
 
 import java.io.File;
@@ -36,21 +37,22 @@ public class GameManager {
 
     public void removeGame( Game game ) {
 
-        // Unload and Delete World
-        plugin.getEngine().unloadWorld(game.getWorld(), true);
-        deleteFolder( game.getWorld().getDirectory() );
+        if ( game.getStatus().equals( GameStatus.RUNNING ) ) {
 
-        // Nether
-        //plugin.getEngine().unloadWorld(game.getNether(), true);
-        //deleteFolder( game.getNether().getDirectory() );
+            // Unload and Delete Worlds
+            plugin.getEngine().unloadWorld(game.getWorld(), true);
+            deleteFolder( game.getWorld().getDirectory() );
 
+            // Nether
+            plugin.getEngine().unloadWorld(game.getNether(), true);
+            deleteFolder( game.getNether().getDirectory() );
+
+        }
 
         games.remove(game);
     }
 
     public boolean deleteFolder(File file) {
-
-        //HardCoreGames.getInstance().getLogger().info("World delete : " + file.getAbsolutePath() );
 
         if (file.exists()) {
 

@@ -3,6 +3,7 @@ package ch.minepvp.spout.hardcoregames.commands;
 import ch.minepvp.spout.hardcoregames.Game;
 import ch.minepvp.spout.hardcoregames.config.GameDifficulty;
 import ch.minepvp.spout.hardcoregames.config.GameSize;
+import ch.minepvp.spout.hardcoregames.config.GameStatus;
 import ch.minepvp.spout.hardcoregames.manager.GameManager;
 import ch.minepvp.spout.hardcoregames.HardCoreGames;
 import org.spout.api.chat.ChatArguments;
@@ -29,36 +30,36 @@ public class HardCoreGamesCommands {
     @CommandPermissions("hcg.help")
     public void help(CommandContext args, CommandSource source) throws CommandException {
 
-        source.sendMessage( ChatStyle.DARK_GREEN, "-----------------------------------------------------" );
+        source.sendMessage( ChatStyle.BLUE, "-----------------------------------------------------" );
         source.sendMessage( ChatStyle.YELLOW, "Help" );
-        source.sendMessage( ChatStyle.DARK_GREEN, "-----------------------------------------------------" );
+        source.sendMessage( ChatStyle.BLUE, "-----------------------------------------------------" );
 
         if ( source.hasPermission("hcg.create") ) {
-            source.sendMessage( ChatStyle.BLUE, "/game create <easy|normal|hard|hardcore> <tiny|small|medium|big>" );
+            source.sendMessage( ChatStyle.YELLOW, "/game create <easy|normal|hard|hardcore> <tiny|small|medium|big>" );
             source.sendMessage( ChatArguments.fromFormatString(Translation.tr("Create a new HardCore Game", source)) );
         }
 
         if ( source.hasPermission("hcg.list") ) {
-            source.sendMessage( ChatStyle.BLUE, "/game list" );
+            source.sendMessage( ChatStyle.YELLOW, "/game list" );
             source.sendMessage( ChatArguments.fromFormatString( Translation.tr("List all running Games", source) ) );
         }
 
         if ( source.hasPermission("hcg.join") ) {
-            source.sendMessage( ChatStyle.BLUE, "/game join <player>" );
+            source.sendMessage( ChatStyle.YELLOW, "/game join <player>" );
             source.sendMessage( ChatArguments.fromFormatString( Translation.tr("Join a Game over a Player", source) ) );
         }
 
         if ( source.hasPermission("hcg.leave") ) {
-            source.sendMessage( ChatStyle.BLUE, "/game leave" );
+            source.sendMessage( ChatStyle.YELLOW, "/game leave" );
             source.sendMessage( ChatArguments.fromFormatString( Translation.tr("Leave the Game", source) ) );
         }
 
         if ( source.hasPermission("hcg.start") ) {
-            source.sendMessage( ChatStyle.BLUE, "/game start" );
+            source.sendMessage( ChatStyle.YELLOW, "/game start" );
             source.sendMessage( ChatArguments.fromFormatString( Translation.tr("Start the Game", source) ) );
         }
 
-        source.sendMessage( ChatStyle.DARK_GREEN, "-----------------------------------------------------" );
+        source.sendMessage( ChatStyle.BLUE, "-----------------------------------------------------" );
 
     }
 
@@ -119,14 +120,14 @@ public class HardCoreGamesCommands {
             return;
         }
 
-        source.sendMessage( ChatStyle.DARK_GREEN, "-----------------------------------------------------" );
+        source.sendMessage( ChatStyle.BLUE, "-----------------------------------------------------" );
         source.sendMessage( ChatStyle.YELLOW, "List all Games" );
-        source.sendMessage( ChatStyle.DARK_GREEN, "-----------------------------------------------------" );
+        source.sendMessage( ChatStyle.BLUE, "-----------------------------------------------------" );
 
         for ( Game game : gameManager.getGames() ) {
 
-            source.sendMessage( ChatArguments.fromFormatString( Translation.tr("{{GRAY}}Owner : {{GOLD}}%0 {{GRAY}}Status : {{GOLD}}%1", source, game.getOwner().getName(), game.getStatus() ) ) );
-            source.sendMessage( ChatArguments.fromFormatString( Translation.tr("{{GRAY}}Settings : {{GRAY}}Difficulty {{GOLD}}%0 {{GRAY}}Size {{GOLD}}%1", source, game.getDifficulty(), game.getSize() ) ) );
+            source.sendMessage( ChatArguments.fromFormatString( Translation.tr("{{WHITE}}Owner : {{GOLD}}%0 {{WHITE}}Status : {{GOLD}}%1", source, game.getOwner().getName(), game.getStatus() ) ) );
+            source.sendMessage( ChatArguments.fromFormatString( Translation.tr("{{WHITE}}Settings : {{WHITE}}Difficulty {{GOLD}}%0 {{WHITE}}Size {{GOLD}}%1", source, game.getDifficulty(), game.getSize() ) ) );
 
             String players = "";
 
@@ -136,9 +137,8 @@ public class HardCoreGamesCommands {
 
             }
 
-            source.sendMessage( ChatArguments.fromFormatString( Translation.tr("{{GRAY}}Players : {{WHITE}}%0", source, players ) ) );
-
-            source.sendMessage( ChatStyle.DARK_GREEN, "-----------------------------------------------------" );
+            source.sendMessage( ChatArguments.fromFormatString( Translation.tr("{{WHITE}}Players : {{GOLD}}%0", source, players ) ) );
+            source.sendMessage( ChatStyle.BLUE, "-----------------------------------------------------" );
         }
 
     }
@@ -173,11 +173,14 @@ public class HardCoreGamesCommands {
             return;
         }
 
-        // TODO message
-        //Translation.broadcast("{{GOLD}}%0 has joined the Game", game.getPlayers(), player.getName() );
         game.addPlayer( player );
 
-        source.sendMessage( ChatArguments.fromFormatString(Translation.tr("{{GOLD}}You joined the Game!", source)) );
+        player.sendMessage( ChatArguments.fromFormatString(Translation.tr("{{GOLD}}You joined the Game!", player)) );
+
+        for ( Player toPlayer : game.getPlayers() ) {
+            toPlayer.sendMessage( ChatArguments.fromFormatString(Translation.tr("{{GOLD}}%1 has joined the Game!!", toPlayer, player)) );
+        }
+
     }
 
     @Command(aliases = {"leave"}, usage = "", desc = "")
@@ -200,7 +203,10 @@ public class HardCoreGamesCommands {
 
         game.removePlayer(player);
 
-        source.sendMessage( ChatArguments.fromFormatString(Translation.tr("{{GOLD}}You leave the Game!", source)) );
+        if ( game.getPlayers().size() == 0 ) {
+            gameManager.removeGame(game);
+        }
+
     }
 
     @Command(aliases = {"start"}, usage = "", desc = "")
@@ -226,7 +232,7 @@ public class HardCoreGamesCommands {
             return;
         }
 
-        if ( game.getStatus().equals("running") ) {
+        if ( game.getStatus().equals( GameStatus.RUNNING ) ) {
             source.sendMessage( ChatArguments.fromFormatString(Translation.tr("{{RED}}The Game is allready running!", source)) );
             return;
         }

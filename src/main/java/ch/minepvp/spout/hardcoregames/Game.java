@@ -17,7 +17,10 @@ import org.spout.api.geo.World;
 import ch.minepvp.spout.hardcoregames.task.GenerateWorldsTask;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.discrete.Point;
+import org.spout.api.inventory.Inventory;
+import org.spout.api.inventory.ItemStack;
 import org.spout.api.lang.Translation;
+import org.spout.api.material.MaterialRegistry;
 import org.spout.api.math.IntVector3;
 import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.util.OutwardIterator;
@@ -25,7 +28,10 @@ import org.spout.vanilla.component.inventory.PlayerInventory;
 import org.spout.vanilla.component.living.Human;
 import org.spout.vanilla.component.misc.HealthComponent;
 import org.spout.vanilla.data.GameMode;
+import org.spout.vanilla.material.VanillaMaterial;
+import org.spout.vanilla.material.VanillaMaterials;
 import org.spout.vanilla.material.block.Solid;
+import org.spout.vanilla.material.item.armor.Armor;
 import org.spout.vanilla.source.HealthChangeCause;
 
 public class Game {
@@ -51,11 +57,15 @@ public class Game {
 
 	private GameDifficulty difficulty;
 
-
     // Difficulty Settings
     private Integer health;
     private Integer food;
     private Boolean regen;
+
+    private ItemStack armorHelmet = null;
+    private ItemStack armorChestPlate = null;
+    private ItemStack armorLeggings = null;
+    private ItemStack armorBoots = null;
 
     private Boolean noobProtection = true;
 
@@ -75,6 +85,7 @@ public class Game {
 
         loadSizeSettings();
         loadDifficultySettings();
+        loadArmorSettings();
 	}
 
     private void loadSizeSettings() {
@@ -126,6 +137,84 @@ public class Game {
 
     }
 
+    private void loadArmorSettings() {
+
+        if ( difficulty.equals(GameDifficulty.EASY) ) {
+
+            if ( Config.GAME_DIFFICULTY_EASY_ARMOR_HELMET.getShort() > 0 ) {
+                armorHelmet = new ItemStack( VanillaMaterials.getMaterial( Config.GAME_DIFFICULTY_EASY_ARMOR_HELMET.getShort() ), 1 );
+            }
+
+            if ( Config.GAME_DIFFICULTY_EASY_ARMOR_CHESTPLATE.getShort() > 0 ) {
+                armorChestPlate = new ItemStack( VanillaMaterials.getMaterial( Config.GAME_DIFFICULTY_EASY_ARMOR_CHESTPLATE.getShort() ), 1 );
+            }
+
+            if ( Config.GAME_DIFFICULTY_EASY_ARMOR_LEGGINGS.getShort() > 0 ) {
+                armorLeggings =  new ItemStack( VanillaMaterials.getMaterial( Config.GAME_DIFFICULTY_EASY_ARMOR_LEGGINGS.getShort() ), 1 );
+            }
+
+            if ( Config.GAME_DIFFICULTY_EASY_ARMOR_BOOTS.getShort() > 0 ) {
+                armorBoots =  new ItemStack( VanillaMaterials.getMaterial( Config.GAME_DIFFICULTY_EASY_ARMOR_BOOTS.getShort() ), 1 );
+            }
+
+        } else if ( difficulty.equals(GameDifficulty.NORMAL) ) {
+
+            if ( Config.GAME_DIFFICULTY_NORMAL_ARMOR_HELMET.getShort() > 0 ) {
+                armorHelmet = new ItemStack( VanillaMaterials.getMaterial( Config.GAME_DIFFICULTY_NORMAL_ARMOR_HELMET.getShort() ), 1 );
+            }
+
+            if ( Config.GAME_DIFFICULTY_NORMAL_ARMOR_CHESTPLATE.getShort() > 0 ) {
+                armorChestPlate = new ItemStack( VanillaMaterials.getMaterial( Config.GAME_DIFFICULTY_NORMAL_ARMOR_CHESTPLATE.getShort() ), 1 );
+            }
+
+            if ( Config.GAME_DIFFICULTY_NORMAL_ARMOR_LEGGINGS.getShort() > 0 ) {
+                armorLeggings =  new ItemStack( VanillaMaterials.getMaterial( Config.GAME_DIFFICULTY_NORMAL_ARMOR_LEGGINGS.getShort() ), 1 );
+            }
+
+            if ( Config.GAME_DIFFICULTY_NORMAL_ARMOR_BOOTS.getShort() > 0 ) {
+                armorBoots =  new ItemStack( VanillaMaterials.getMaterial( Config.GAME_DIFFICULTY_NORMAL_ARMOR_BOOTS.getShort() ), 1 );
+            }
+
+        } else if ( difficulty.equals(GameDifficulty.HARD) ) {
+
+            if ( Config.GAME_DIFFICULTY_HARD_ARMOR_HELMET.getShort() > 0 ) {
+                armorHelmet = new ItemStack( VanillaMaterials.getMaterial( Config.GAME_DIFFICULTY_HARD_ARMOR_HELMET.getShort() ), 1 );
+            }
+
+            if ( Config.GAME_DIFFICULTY_HARD_ARMOR_CHESTPLATE.getShort() > 0 ) {
+                armorChestPlate = new ItemStack( VanillaMaterials.getMaterial( Config.GAME_DIFFICULTY_HARD_ARMOR_CHESTPLATE.getShort() ), 1 );
+            }
+
+            if ( Config.GAME_DIFFICULTY_HARD_ARMOR_LEGGINGS.getShort() > 0 ) {
+                armorLeggings =  new ItemStack( VanillaMaterials.getMaterial( Config.GAME_DIFFICULTY_HARD_ARMOR_LEGGINGS.getShort() ), 1 );
+            }
+
+            if ( Config.GAME_DIFFICULTY_HARD_ARMOR_BOOTS.getShort() > 0 ) {
+                armorBoots =  new ItemStack( VanillaMaterials.getMaterial( Config.GAME_DIFFICULTY_HARD_ARMOR_BOOTS.getShort() ), 1 );
+            }
+
+        } else if ( difficulty.equals(GameDifficulty.HARDCORE) ) {
+
+            if ( Config.GAME_DIFFICULTY_HARDCORE_ARMOR_HELMET.getShort() > 0 ) {
+                armorHelmet = new ItemStack( VanillaMaterials.getMaterial( Config.GAME_DIFFICULTY_HARDCORE_ARMOR_HELMET.getShort() ), 1 );
+            }
+
+            if ( Config.GAME_DIFFICULTY_HARDCORE_ARMOR_CHESTPLATE.getShort() > 0 ) {
+                armorChestPlate = new ItemStack( VanillaMaterials.getMaterial( Config.GAME_DIFFICULTY_HARDCORE_ARMOR_CHESTPLATE.getShort() ), 1 );
+            }
+
+            if ( Config.GAME_DIFFICULTY_HARDCORE_ARMOR_LEGGINGS.getShort() > 0 ) {
+                armorLeggings =  new ItemStack( VanillaMaterials.getMaterial( Config.GAME_DIFFICULTY_HARDCORE_ARMOR_LEGGINGS.getShort() ), 1 );
+            }
+
+            if ( Config.GAME_DIFFICULTY_HARDCORE_ARMOR_BOOTS.getShort() > 0 ) {
+                armorBoots =  new ItemStack( VanillaMaterials.getMaterial( Config.GAME_DIFFICULTY_HARDCORE_ARMOR_BOOTS.getShort() ), 1 );
+            }
+
+        }
+
+    }
+
     private void loadChunkRadius() {
 
         chunkRadius = players.size() * sizeInt;
@@ -142,7 +231,6 @@ public class Game {
         }
 
         calculateChunkRadius();
-        calculateP1AndP2();
 
 		GenerateWorldsTask task1 = new GenerateWorldsTask(this);
 		plugin.getEngine().getScheduler().scheduleSyncDelayedTask(plugin, task1, TaskPriority.HIGH);
@@ -206,7 +294,7 @@ public class Game {
     /**
      * Calculate the ege Points of the Battlefield
      */
-    private void calculateP1AndP2() {
+    public void calculateP1AndP2() {
 
         int x = getWorld().getSpawnPoint().getPosition().getChunkX() - getChunkRadius();
         int z = getWorld().getSpawnPoint().getPosition().getChunkZ() - getChunkRadius();
@@ -282,7 +370,7 @@ public class Game {
         // TODO set Player Stats and Items for Game Start
 
         // Clear Inventory
-        player.add(Human.class).getInventory().clear();
+        player.add(PlayerInventory.class).clear();
 
         player.add(Human.class).setGamemode(GameMode.SURVIVAL);
 
@@ -295,12 +383,23 @@ public class Game {
         // TODO set Items
 
 
+        // Set Armor
+        if ( armorHelmet != null ) {
+            player.add(PlayerInventory.class).getArmor().setHelmet(armorHelmet);
+        }
 
-        // TODO set Armor
-        //player.add(Human.class).getInventory().getArmor().setHelmet();
-        //player.add(Human.class).getInventory().getArmor().setChestPlate();
-        //player.add(Human.class).getInventory().getArmor().setLeggings();
-        //player.add(Human.class).getInventory().getArmor().setBoots();
+        if ( armorChestPlate != null ) {
+            player.add(PlayerInventory.class).getArmor().setChestPlate(armorChestPlate);
+        }
+
+        if ( armorLeggings != null ) {
+            player.add(PlayerInventory.class).getArmor().setLeggings(armorLeggings);
+        }
+
+        if ( armorBoots != null ) {
+            player.add(PlayerInventory.class).getArmor().setBoots(armorBoots);
+        }
+
     }
 
     /**
@@ -377,7 +476,9 @@ public class Game {
     public void savePlayer( Player player ) {
 
         // Inventory
-        player.add(Human.class).getData().put("hcg_inventory",player.add(Human.class).getInventory());
+        player.add(Human.class).getData().put("hcg_inventory",player.add(PlayerInventory.class).getClass());
+
+        // Health
         player.add(Human.class).getData().put("hcg_health", player.add(Human.class).getHealth().getHealth());
 
         // Point
@@ -396,25 +497,25 @@ public class Game {
         PlayerInventory inventory = (PlayerInventory) player.add(Human.class).getData().get("hcg_inventory");
 
         // Armor
-        player.add(Human.class).getInventory().getArmor().clear();
-        player.add(Human.class).getInventory().getArmor().setBoots( inventory.getArmor().getBoots() );
-        player.add(Human.class).getInventory().getArmor().setLeggings(inventory.getArmor().getLeggings());
-        player.add(Human.class).getInventory().getArmor().setChestPlate(inventory.getArmor().getChestPlate());
-        player.add(Human.class).getInventory().getArmor().setHelmet(inventory.getArmor().getHelmet());
+        player.add(PlayerInventory.class).getArmor().clear();
+        player.add(PlayerInventory.class).getArmor().setBoots( inventory.getArmor().getBoots() );
+        player.add(PlayerInventory.class).getArmor().setLeggings(inventory.getArmor().getLeggings());
+        player.add(PlayerInventory.class).getArmor().setChestPlate(inventory.getArmor().getChestPlate());
+        player.add(PlayerInventory.class).getArmor().setHelmet(inventory.getArmor().getHelmet());
 
 
         // Main
-        player.add(Human.class).getInventory().getMain().clear();
+        player.add(PlayerInventory.class).getMain().clear();
 
         for ( int i = 0; i > inventory.getMain().size(); i++ ) {
-            player.add(Human.class).getInventory().getMain().set(i, inventory.getMain().get(i));
+            player.add(PlayerInventory.class).getMain().set(i, inventory.getMain().get(i));
         }
 
         // Quickbar
-        player.add(Human.class).getInventory().getQuickbar().clear();
+        player.add(PlayerInventory.class).getQuickbar().clear();
 
         for ( int i = 0; i > inventory.getQuickbar().size(); i++ ) {
-            player.add(Human.class).getInventory().getQuickbar().set(i, inventory.getQuickbar().get(i));
+            player.add(PlayerInventory.class).getQuickbar().set(i, inventory.getQuickbar().get(i));
         }
 
         // Restore Healt
@@ -423,9 +524,6 @@ public class Game {
 
         // Teleport back
         player.teleport( (Point)player.add(Human.class).getData().get("hcg_point") );
-
-        //player.teleport(plugin.getEngine().getWorld("world").getSpawnPoint());
-
 
     }
 	
@@ -454,10 +552,39 @@ public class Game {
 	}
 
     public void removePlayer( Player player ) {
+
         this.players.remove( player );
 
         if ( getStatus().equals( GameStatus.RUNNING) ) {
+
+            if ( getPlayers().size() > 0 ) {
+
+                player.sendMessage( ChatArguments.fromFormatString( Translation.tr("{{RED}}You have loos the Game!", player) ) );
+
+                for ( Player toPlayer : getPlayers() ) {
+                    player.sendMessage( ChatArguments.fromFormatString( Translation.tr("{{GOLD}}[Game] {{RED}}%1 {{GOLD}}has died! {{RED}}%2 {{GOLD}}left...", player, player.getName(), getPlayers().size()) ) );
+                }
+
+            } else {
+
+                Player winner = getPlayers().get(0);
+                winner.sendMessage( ChatArguments.fromFormatString( Translation.tr("{{GOLD}}You have won the Game!", winner) ) );
+                restorePlayer(winner);
+            }
+
             restorePlayer( player );
+        } else {
+
+            player.sendMessage( ChatArguments.fromFormatString( Translation.tr("{{RED}}You leave the Game!", player)) );
+
+            if ( player.equals( getOwner() ) ) {
+
+                if ( getPlayers().size() > 0 ) {
+                    setOwner( getPlayers().get(0) );
+                }
+
+            }
+
         }
 
     }
@@ -536,5 +663,61 @@ public class Game {
 
     public void setP1(Point p1) {
         this.p1 = p1;
+    }
+
+    public ItemStack getArmorBoots() {
+        return armorBoots;
+    }
+
+    public void setArmorBoots(ItemStack armorBoots) {
+        this.armorBoots = armorBoots;
+    }
+
+    public ItemStack getArmorHelmet() {
+        return armorHelmet;
+    }
+
+    public void setArmorHelmet(ItemStack armorHelmet) {
+        this.armorHelmet = armorHelmet;
+    }
+
+    public ItemStack getArmorChestPlate() {
+        return armorChestPlate;
+    }
+
+    public void setArmorChestPlate(ItemStack armorChestPlate) {
+        this.armorChestPlate = armorChestPlate;
+    }
+
+    public ItemStack getArmorLeggings() {
+        return armorLeggings;
+    }
+
+    public void setArmorLeggings(ItemStack armorLeggings) {
+        this.armorLeggings = armorLeggings;
+    }
+
+    public Integer getHealth() {
+        return health;
+    }
+
+    public void setHealth(Integer health) {
+        this.health = health;
+    }
+
+    public Integer getFood() {
+        return food;
+    }
+
+    public void setFood(Integer food) {
+        this.food = food;
+    }
+
+    public Boolean getRegen() {
+        return regen;
+    }
+
+    public void setRegen(Boolean regen) {
+        this.regen = regen;
     }
 }

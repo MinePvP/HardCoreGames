@@ -7,8 +7,10 @@ import org.spout.api.chat.ChatArguments;
 import org.spout.api.entity.Player;
 import org.spout.api.event.EventHandler;
 import org.spout.api.event.Listener;
+import org.spout.api.event.entity.EntityTeleportEvent;
 import org.spout.api.event.player.PlayerChatEvent;
 import org.spout.api.event.player.PlayerInteractEvent;
+import org.spout.api.event.player.PlayerLeaveEvent;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.lang.Translation;
@@ -63,33 +65,28 @@ public class PlayerListener implements Listener {
 
         if ( game != null ) {
 
-            game.removePlayer( player );
-            game.restorePlayer(player);
-            player.sendMessage( ChatArguments.fromFormatString( Translation.tr("{{RED}}You have loos the Game!", player) ) );
+            game.removePlayer(player);
 
-            if ( game.getPlayers().size() > 1 ) {
-
-                for ( Player toPlayer : game.getPlayers() ) {
-
-                    player.sendMessage( ChatArguments.fromFormatString( Translation.tr("{{GOLD}}[Game] {{RED}}%1 {{GOLD}}has died! {{RED}}%2 {{GOLD}}left...", player, player.getName(), game.getPlayers().size() ) ) );
-
-                }
-
-                for ( Player toPlayer : game.getPlayers() ) {
-
-                    toPlayer.sendMessage( ChatArguments.fromFormatString( Translation.tr("{{RED}}%1 {{GOLD}}has died! {{RED}}%2 {{GOLD}}left...", toPlayer, player.getName(), game.getPlayers().size()) ) );
-
-                }
-
-            } else {
-
-                Player winner = game.getPlayers().get(0);
-
-                winner.sendMessage( ChatArguments.fromFormatString( Translation.tr("{{GOLD}}You have won the Game!", winner) ) );
-
-                game.restorePlayer(winner);
+            if ( game.getPlayers().size() == 0 ) {
                 gameManager.removeGame(game);
+            }
 
+        }
+
+    }
+
+    @EventHandler void onPlayer( PlayerLeaveEvent event ) {
+
+        Player player = event.getPlayer();
+
+        Game game = gameManager.getGameByPlayer(player);
+
+        if ( game != null ) {
+
+            game.removePlayer(player);
+
+            if ( game.getPlayers().size() == 0 ) {
+                gameManager.removeGame(game);
             }
 
         }
@@ -107,7 +104,9 @@ public class PlayerListener implements Listener {
 
                 if ( event.getCause().equals( HealthChangeCause.REGENERATION ) ) {
 
-                    event.setCancelled(true);
+                    if ( game.getRegen() == false ) {
+                        event.setCancelled(true);
+                    }
 
                 }
 
@@ -117,5 +116,4 @@ public class PlayerListener implements Listener {
 
     }
 
-	
 }

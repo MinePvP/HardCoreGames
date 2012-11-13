@@ -24,23 +24,25 @@ public class EntityListener implements Listener {
     @EventHandler
     public void onPlayerDeathEvent( EntityDamageEvent event ) {
 
-        if ( event.getEntity() instanceof Player) {
+        if ( event.getEntity() instanceof Player ) {
 
-            Player damager = (Player)event.getDamager();
-            Game game = gameManager.getGameByPlayer( damager );
+            if ( event.getDamager() instanceof Player ) {
 
-            if ( game != null ) {
+                Player damager = (Player)event.getDamager();
+                Game game = gameManager.getGameByPlayer( damager );
 
-                if ( game.getNoobProtection() ) {
-                    event.setCancelled(true);
-                    damager.sendMessage(ChatArguments.fromFormatString(Translation.tr("{{RED}}Noob Protection is still on!", damager) ) );
+                if ( game != null ) {
+
+                    if ( game.getNoobProtection() ) {
+                        event.setCancelled(true);
+                        damager.sendMessage(ChatArguments.fromFormatString(Translation.tr("{{RED}}Noob Protection is still on!", damager) ) );
+                    }
+
                 }
-
 
             }
 
         }
-
 
     }
 
