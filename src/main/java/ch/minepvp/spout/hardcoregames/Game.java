@@ -12,6 +12,7 @@ import ch.minepvp.spout.hardcoregames.task.NoobProtectionTask;
 import com.sun.jdi.IntegerType;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.entity.Player;
+import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 
 import ch.minepvp.spout.hardcoregames.task.GenerateWorldsTask;
@@ -280,13 +281,12 @@ public class Game {
             if ( ( i * i ) >= chunks) {
                 chunkRadius = (( i - 1 ) / 2) + 1;
                 i = 301;
-
             }
 
         }
 
-        if ( chunkRadius < 4 ) {
-            chunkRadius = 5;
+        if ( chunkRadius <= 5 ) {
+            chunkRadius = 6;
         }
 
     }
@@ -296,15 +296,14 @@ public class Game {
      */
     public void calculateP1AndP2() {
 
-        int x = getWorld().getSpawnPoint().getPosition().getChunkX() - getChunkRadius();
-        int z = getWorld().getSpawnPoint().getPosition().getChunkZ() - getChunkRadius();
-
+        // Point 1
+        int x = (getWorld().getSpawnPoint().getPosition().getChunkX() - getChunkRadius()) * 16;
+        int z = (getWorld().getSpawnPoint().getPosition().getChunkZ() - getChunkRadius()) * 16;
         p1 = new Point(getWorld(), x,0,z);
 
-
-        x = getWorld().getSpawnPoint().getPosition().getChunkX() + getChunkRadius();
-        z = getWorld().getSpawnPoint().getPosition().getChunkZ() + getChunkRadius();
-
+        // Point 2
+        x = (getWorld().getSpawnPoint().getPosition().getChunkX() + getChunkRadius()) * 16;
+        z = (getWorld().getSpawnPoint().getPosition().getChunkZ() + getChunkRadius()) * 16;
         p2 = new Point(getWorld(), x,0,z);
 
     }
@@ -324,7 +323,7 @@ public class Game {
                 savePlayer(player);
                 setPlayerStatsForStart(player);
 
-                saveSpawns.get(i).getWorld().getChunkFromBlock(saveSpawns.get(i));
+                getWorld().getChunkFromBlock(saveSpawns.get(i));
                 player.teleport( saveSpawns.get(i) );
 
                 i++;
@@ -424,7 +423,7 @@ public class Game {
 
                 if ( checkSpawnPoint( point ) ) {
 
-                    plugin.getLogger().info("Fount Spawn Point for Player X : " + point.getBlockX() + " Y : " + point.getBlockY() + " Z : " + point.getBlockZ());
+                    plugin.getLogger().info("Fount Spawn Point for " + player.getName() + " X : " + point.getBlockX() + " Y : " + point.getBlockY() + " Z : " + point.getBlockZ());
 
                     saveSpawnPoint = point;
                     saveSpawns.add(point);

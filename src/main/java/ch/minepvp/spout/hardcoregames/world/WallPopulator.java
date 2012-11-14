@@ -25,13 +25,13 @@ public class WallPopulator extends Populator{
         }
 
         // Is the Chunk between the two Points?
-        if ( chunk.getX() >= game.getP1().getX() && chunk.getX() <= game.getP2().getX() &&
-             chunk.getZ() >= game.getP1().getZ() && chunk.getZ() <= game.getP2().getZ() ) {
+        if ( chunk.getX() >= game.getP1().getChunkX() && chunk.getX() <= game.getP2().getChunkX() &&
+             chunk.getZ() >= game.getP1().getChunkZ() && chunk.getZ() <= game.getP2().getChunkZ() ) {
 
             //HardCoreGames.getInstance().getLogger().info("Generating Wall");
 
             // Vertical plus
-            if ( chunk.getZ() == game.getP1().getZ() ) {
+            if ( chunk.getZ() == game.getP1().getChunkZ() ) {
 
                 //HardCoreGames.getInstance().getLogger().info("WallPopulator 1");
                 generateWallHorizontal(chunk);
@@ -39,7 +39,7 @@ public class WallPopulator extends Populator{
             }
 
             // Vertical mines
-            if ( chunk.getZ() == game.getP2().getZ() ) {
+            if ( chunk.getZ() == game.getP2().getChunkZ() ) {
 
                 //HardCoreGames.getInstance().getLogger().info("WallPopulator 2");
                 generateWallHorizontal(chunk);
@@ -47,7 +47,7 @@ public class WallPopulator extends Populator{
             }
 
             // Horizontal plus
-            if ( chunk.getX() == game.getP1().getX() ) {
+            if ( chunk.getX() == game.getP1().getChunkX() ) {
 
                 //HardCoreGames.getInstance().getLogger().info("WallPopulator 3");
                 generateWallVertical(chunk);
@@ -55,7 +55,7 @@ public class WallPopulator extends Populator{
             }
 
             // Horizontal mines
-            if ( chunk.getX() == game.getP2().getX() ) {
+            if ( chunk.getX() == game.getP2().getChunkX() ) {
 
                 //HardCoreGames.getInstance().getLogger().info("WallPopulator 4");
                 generateWallVertical(chunk);
