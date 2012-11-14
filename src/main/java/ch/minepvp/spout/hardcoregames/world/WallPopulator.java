@@ -3,7 +3,6 @@ package ch.minepvp.spout.hardcoregames.world;
 import ch.minepvp.spout.hardcoregames.Game;
 import org.spout.api.generator.Populator;
 import org.spout.api.geo.cuboid.Chunk;
-import org.spout.api.geo.discrete.Point;
 import org.spout.vanilla.material.VanillaMaterials;
 
 import java.util.Random;

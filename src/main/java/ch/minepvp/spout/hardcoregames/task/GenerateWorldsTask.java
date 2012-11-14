@@ -5,7 +5,6 @@ import ch.minepvp.spout.hardcoregames.config.GameStatus;
 import ch.minepvp.spout.hardcoregames.world.WallPopulator;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.entity.Player;
-import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
@@ -14,13 +13,10 @@ import org.spout.api.lang.Translation;
 import org.spout.api.math.IntVector3;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
-import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.util.OutwardIterator;
 
 import ch.minepvp.spout.hardcoregames.Game;
 import ch.minepvp.spout.hardcoregames.HardCoreGames;
-import ch.minepvp.spout.hardcoregames.config.Config;
-import org.spout.vanilla.component.world.VanillaSky;
 import org.spout.vanilla.component.world.sky.NetherSky;
 import org.spout.vanilla.component.world.sky.NormalSky;
 import org.spout.vanilla.data.Difficulty;
@@ -28,8 +24,6 @@ import org.spout.vanilla.data.Dimension;
 import org.spout.vanilla.data.GameMode;
 import org.spout.vanilla.data.VanillaData;
 import org.spout.vanilla.thread.SpawnLoaderThread;
-import org.spout.vanilla.world.generator.VanillaGenerator;
-import org.spout.vanilla.world.generator.VanillaGenerators;
 import org.spout.vanilla.world.generator.nether.NetherGenerator;
 import org.spout.vanilla.world.generator.normal.NormalGenerator;
 
@@ -58,7 +52,6 @@ public class GenerateWorldsTask implements Runnable{
 
         game.calculateP1AndP2();
 
-
         // Generate Nether
         for (Player player : game.getPlayers() ) {
 
@@ -69,7 +62,6 @@ public class GenerateWorldsTask implements Runnable{
         }
 
         generateNether();
-
 
         // Start Game
         for ( Player player : game.getPlayers() ) {

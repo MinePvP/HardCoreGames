@@ -9,30 +9,22 @@ import ch.minepvp.spout.hardcoregames.config.GameDifficulty;
 import ch.minepvp.spout.hardcoregames.config.GameSize;
 import ch.minepvp.spout.hardcoregames.config.GameStatus;
 import ch.minepvp.spout.hardcoregames.task.NoobProtectionTask;
-import com.sun.jdi.IntegerType;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.entity.Player;
-import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 
 import ch.minepvp.spout.hardcoregames.task.GenerateWorldsTask;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.inventory.Inventory;
 import org.spout.api.inventory.ItemStack;
 import org.spout.api.lang.Translation;
-import org.spout.api.material.MaterialRegistry;
-import org.spout.api.math.IntVector3;
 import org.spout.api.scheduler.TaskPriority;
-import org.spout.api.util.OutwardIterator;
 import org.spout.vanilla.component.inventory.PlayerInventory;
 import org.spout.vanilla.component.living.Human;
 import org.spout.vanilla.component.misc.HealthComponent;
 import org.spout.vanilla.data.GameMode;
-import org.spout.vanilla.material.VanillaMaterial;
 import org.spout.vanilla.material.VanillaMaterials;
 import org.spout.vanilla.material.block.Solid;
-import org.spout.vanilla.material.item.armor.Armor;
 import org.spout.vanilla.source.HealthChangeCause;
 
 public class Game {
@@ -216,12 +208,6 @@ public class Game {
 
     }
 
-    private void loadChunkRadius() {
-
-        chunkRadius = players.size() * sizeInt;
-
-    }
-
     /**
      *
      */
@@ -352,7 +338,6 @@ public class Game {
         try {
             secRandom = SecureRandom.getInstance("SHA1PRNG");
         } catch (NoSuchAlgorithmException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -366,8 +351,6 @@ public class Game {
      */
     private void setPlayerStatsForStart( Player player ) {
 
-        // TODO set Player Stats and Items for Game Start
-
         // Clear Inventory
         player.add(PlayerInventory.class).clear();
 
@@ -376,7 +359,6 @@ public class Game {
         // Set Health and Food
         player.add(HealthComponent.class).setHealth(health, HealthChangeCause.SPAWN);
         // TODO set Food
-
 
 
         // TODO set Items
@@ -464,7 +446,6 @@ public class Game {
         }
 
         return false;
-
     }
 
     /**

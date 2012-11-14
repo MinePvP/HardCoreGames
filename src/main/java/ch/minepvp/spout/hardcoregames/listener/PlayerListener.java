@@ -7,18 +7,12 @@ import org.spout.api.chat.ChatArguments;
 import org.spout.api.entity.Player;
 import org.spout.api.event.EventHandler;
 import org.spout.api.event.Listener;
-import org.spout.api.event.entity.EntityTeleportEvent;
 import org.spout.api.event.player.PlayerChatEvent;
-import org.spout.api.event.player.PlayerInteractEvent;
 import org.spout.api.event.player.PlayerLeaveEvent;
-import org.spout.api.geo.cuboid.Block;
-import org.spout.api.geo.discrete.Point;
 import org.spout.api.lang.Translation;
 import org.spout.vanilla.event.player.PlayerDeathEvent;
 
 import ch.minepvp.spout.hardcoregames.HardCoreGames;
-import org.spout.vanilla.event.player.PlayerFoodSaturationChangeEvent;
-import org.spout.vanilla.material.VanillaMaterials;
 import org.spout.vanilla.protocol.handler.player.EntityHealthChangeEvent;
 import org.spout.vanilla.source.HealthChangeCause;
 

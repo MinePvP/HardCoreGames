@@ -40,12 +40,16 @@ public class GameManager {
         if ( game.getStatus().equals( GameStatus.RUNNING ) ) {
 
             // Unload and Delete Worlds
-            plugin.getEngine().unloadWorld(game.getWorld(), true);
-            deleteFolder( game.getWorld().getDirectory() );
+            if ( game.getWorld() != null ) {
+                plugin.getEngine().unloadWorld(game.getWorld(), true);
+                deleteFolder( game.getWorld().getDirectory() );
+            }
 
             // Nether
-            plugin.getEngine().unloadWorld(game.getNether(), true);
-            deleteFolder( game.getNether().getDirectory() );
+            if ( game.getNether() != null ) {
+                plugin.getEngine().unloadWorld(game.getNether(), true);
+                deleteFolder( game.getNether().getDirectory() );
+            }
 
         }
 
