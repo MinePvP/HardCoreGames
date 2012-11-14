@@ -178,7 +178,7 @@ public class HardCoreGamesCommands {
         player.sendMessage( ChatArguments.fromFormatString(Translation.tr("{{GOLD}}You joined the Game!", player)) );
 
         for ( Player toPlayer : game.getPlayers() ) {
-            toPlayer.sendMessage( ChatArguments.fromFormatString(Translation.tr("{{GOLD}}%1 has joined the Game!!", toPlayer, player)) );
+            toPlayer.sendMessage( ChatArguments.fromFormatString(Translation.tr("{{GOLD}}%0 has joined the Game!!", toPlayer, player.getName())) );
         }
 
     }
