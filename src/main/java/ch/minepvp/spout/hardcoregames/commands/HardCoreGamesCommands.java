@@ -75,30 +75,32 @@ public class HardCoreGamesCommands {
         }
 
         GameDifficulty difficutly = null;
-
-        if ( args.getString(0).equalsIgnoreCase("easy") ) {
-            difficutly = GameDifficulty.EASY;
-        } else if ( args.getString(0).equalsIgnoreCase("normal") ) {
-            difficutly = GameDifficulty.NORMAL;
-        } else if ( args.getString(0).equalsIgnoreCase("hard") ) {
-            difficutly = GameDifficulty.HARD;
-        } else if ( args.getString(0).equalsIgnoreCase("hardcore") ) {
-            difficutly = GameDifficulty.HARDCORE;
-        } else {
-            difficutly = GameDifficulty.NORMAL;
-        }
-
         GameSize size = null;
 
-        if ( args.getString(1).equalsIgnoreCase("tiny") ) {
-            size = GameSize.TINY;
-        } else if ( args.getString(1).equalsIgnoreCase("small") ) {
-            size = GameSize.SMALL;
-        } else if ( args.getString(1).equalsIgnoreCase("medium") ) {
-            size = GameSize.MEDIUM;
-        } else if ( args.getString(1).equalsIgnoreCase("big") ) {
-            size = GameSize.BIG;
+        if ( args.length() > 0 ) {
+
+            if ( args.getString(0).equalsIgnoreCase("easy") ) {
+                difficutly = GameDifficulty.EASY;
+            } else if ( args.getString(0).equalsIgnoreCase("normal") ) {
+                difficutly = GameDifficulty.NORMAL;
+            } else if ( args.getString(0).equalsIgnoreCase("hard") ) {
+                difficutly = GameDifficulty.HARD;
+            } else if ( args.getString(0).equalsIgnoreCase("hardcore") ) {
+                difficutly = GameDifficulty.HARDCORE;
+            }
+
+            if ( args.getString(1).equalsIgnoreCase("tiny") ) {
+                size = GameSize.TINY;
+            } else if ( args.getString(1).equalsIgnoreCase("small") ) {
+                size = GameSize.SMALL;
+            } else if ( args.getString(1).equalsIgnoreCase("medium") ) {
+                size = GameSize.MEDIUM;
+            } else if ( args.getString(1).equalsIgnoreCase("big") ) {
+                size = GameSize.BIG;
+            }
+
         } else {
+            difficutly = GameDifficulty.NORMAL;
             size = GameSize.MEDIUM;
         }
 
