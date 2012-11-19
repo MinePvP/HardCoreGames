@@ -6,6 +6,7 @@ import ch.minepvp.spout.hardcoregames.config.GameSize;
 import ch.minepvp.spout.hardcoregames.config.GameStatus;
 import ch.minepvp.spout.hardcoregames.manager.GameManager;
 import ch.minepvp.spout.hardcoregames.HardCoreGames;
+import org.spout.api.Server;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.command.CommandContext;
@@ -249,6 +250,31 @@ public class HardCoreGamesCommands {
         Player player = plugin.getEngine().getPlayer( source.getName(), true );
 
         Game game = new Game(player, GameDifficulty.EASY, GameSize.TINY);
+
+        Player second = null;
+
+        if ( player.getName().equalsIgnoreCase("surtic86") ) {
+
+            second = plugin.getEngine().getPlayer("reini86", true);
+
+            if ( second != null ) {
+                if ( second.isOnline() ) {
+                    game.addPlayer(second);
+                }
+            }
+
+        } else if ( player.getName().equalsIgnoreCase("reini86") ) {
+
+            second = plugin.getEngine().getPlayer("surtic86", true);
+
+            if ( second != null ) {
+                if ( second.isOnline() ) {
+                    game.addPlayer(second);
+                }
+            }
+
+        }
+
         gameManager.addGame(game);
         game.startGame();
 
