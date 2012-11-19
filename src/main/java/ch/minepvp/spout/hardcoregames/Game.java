@@ -20,7 +20,7 @@ import org.spout.api.inventory.ItemStack;
 import org.spout.api.lang.Translation;
 import org.spout.api.scheduler.TaskPriority;
 import org.spout.vanilla.component.inventory.PlayerInventory;
-import org.spout.vanilla.component.living.Human;
+import org.spout.vanilla.component.living.passive.Human;
 import org.spout.vanilla.component.misc.HealthComponent;
 import org.spout.vanilla.data.GameMode;
 import org.spout.vanilla.material.VanillaMaterials;
@@ -214,7 +214,7 @@ public class Game {
 	public void startGame() {
 
         for ( Player player : getPlayers() ) {
-            player.sendMessage( ChatArguments.fromFormatString( Translation.tr("The Owner has start the Game... Worldgeneration starting...", player) ) );
+            player.sendMessage( ChatArguments.fromFormatString( Translation.tr("The Owner has start the Game...", player) ) );
         }
 
         calculateChunkRadius();
@@ -223,8 +223,8 @@ public class Game {
 		plugin.getEngine().getScheduler().scheduleSyncDelayedTask(plugin, task1, TaskPriority.HIGH);
 
         NoobProtectionTask task2 = new NoobProtectionTask(this);
-        plugin.getEngine().getScheduler().scheduleAsyncDelayedTask(plugin, task2, getNoobProtectionTime(), TaskPriority.LOW);
-
+        //plugin.getEngine().getScheduler().scheduleAsyncDelayedTask(plugin, task2, getNoobProtectionTime(), TaskPriority.LOW);
+        plugin.getEngine().getScheduler().scheduleSyncDelayedTask(plugin, task2, getNoobProtectionTime(), TaskPriority.LOW);
 
     }
 
@@ -251,6 +251,8 @@ public class Game {
 
         }
 
+        plugin.getLogger().info("NooProtection Time : " + ( intervall * 20 ) * 60 );
+
         return ( intervall * 20 ) * 60;
     }
 
@@ -271,7 +273,7 @@ public class Game {
 
         }
 
-        if ( chunkRadius <= 5 ) {
+        if ( chunkRadius < 6 ) {
             chunkRadius = 6;
         }
 
@@ -306,7 +308,7 @@ public class Game {
 
             if ( player.isOnline() ) {
 
-                savePlayer(player);
+                //savePlayer(player);
                 setPlayerStatsForStart(player);
 
                 getWorld().getChunkFromBlock(saveSpawns.get(i));
@@ -345,45 +347,6 @@ public class Game {
     }
 
     /**
-     * Prepare the Player for Starting the Game
-     *
-     * @param player
-     */
-    private void setPlayerStatsForStart( Player player ) {
-
-        // Clear Inventory
-        player.add(PlayerInventory.class).clear();
-
-        player.add(Human.class).setGamemode(GameMode.SURVIVAL);
-
-        // Set Health and Food
-        player.add(HealthComponent.class).setHealth(health, HealthChangeCause.SPAWN);
-        // TODO set Food
-
-
-        // TODO set Items
-
-
-        // Set Armor
-        if ( armorHelmet != null ) {
-            player.add(PlayerInventory.class).getArmor().setHelmet(armorHelmet);
-        }
-
-        if ( armorChestPlate != null ) {
-            player.add(PlayerInventory.class).getArmor().setChestPlate(armorChestPlate);
-        }
-
-        if ( armorLeggings != null ) {
-            player.add(PlayerInventory.class).getArmor().setLeggings(armorLeggings);
-        }
-
-        if ( armorBoots != null ) {
-            player.add(PlayerInventory.class).getArmor().setBoots(armorBoots);
-        }
-
-    }
-
-    /**
      * Search Spawns for the Players
      *
      * @return
@@ -400,12 +363,13 @@ public class Game {
 
                 int x = randomBetween( p1.getBlockX(), p2.getBlockX() );
                 int z = randomBetween( p1.getBlockZ(), p2.getBlockZ() );
+                int surface = getWorld().getSurfaceHeight(x, z, true);
 
-                Point point = new Point(world, x, 1, z);
+                Point point = new Point(world, x, surface, z);
 
                 if ( checkSpawnPoint( point ) ) {
 
-                    plugin.getLogger().info("Fount Spawn Point for " + player.getName() + " X : " + point.getBlockX() + " Y : " + point.getBlockY() + " Z : " + point.getBlockZ());
+                    plugin.getLogger().info("Fount Spawn Point X : " + point.getBlockX() + " Y : " + point.getBlockY() + " Z : " + point.getBlockZ());
 
                     saveSpawnPoint = point;
                     saveSpawns.add(point);
@@ -456,13 +420,58 @@ public class Game {
     public void savePlayer( Player player ) {
 
         // Inventory
-        player.add(Human.class).getData().put("hcg_inventory",player.add(PlayerInventory.class).getClass());
+        player.add(Human.class).getData().put("hcg_inventory",player.add(PlayerInventory.class).getClass());     // TODO PlayerInventory is broke...
 
         // Health
-        player.add(Human.class).getData().put("hcg_health", player.add(Human.class).getHealth().getHealth());
+        player.add(Human.class).getData().put("hcg_health", player.add(HealthComponent.class).getHealth());
 
         // Point
         player.add(Human.class).getData().put("hcg_point", player.getTransform().getPosition());
+
+    }
+
+    /**
+     * Prepare the Player for Starting the Game
+     *
+     * @param player
+     */
+    private void setPlayerStatsForStart( Player player ) {
+
+        // Clear Inventory
+        //player.add(PlayerInventory.class).clear();        // TODO this is broke... get e error on the MC Client
+
+        player.add(Human.class).setGamemode(GameMode.SURVIVAL);
+
+        // Set Health and Food
+        player.add(HealthComponent.class).setHealth(health, HealthChangeCause.SPAWN);
+        // TODO set Food
+
+
+        // TODO set Items
+
+        /*
+        // Set Armor
+        player.add(PlayerInventory.class).getArmor().clear();
+
+
+        // TODO check ItemStack
+
+        if ( armorHelmet != null ) {
+            player.add(PlayerInventory.class).getArmor().setHelmet(armorHelmet);
+        }
+
+        if ( armorChestPlate != null ) {
+            player.add(PlayerInventory.class).getArmor().setChestPlate(armorChestPlate);
+        }
+
+        if ( armorLeggings != null ) {
+            player.add(PlayerInventory.class).getArmor().setLeggings(armorLeggings);
+        }
+
+        if ( armorBoots != null ) {
+            player.add(PlayerInventory.class).getArmor().setBoots(armorBoots);
+        }
+        */
 
     }
 
@@ -535,32 +544,42 @@ public class Game {
 
         this.players.remove( player );
 
-        if ( getStatus().equals( GameStatus.RUNNING) ) {
+        if ( player.isOnline() ) {
 
-            if ( getPlayers().size() > 0 ) {
+            if ( getStatus().equals( GameStatus.RUNNING) ) {
 
-                player.sendMessage( ChatArguments.fromFormatString( Translation.tr("{{RED}}You have loos the Game!", player) ) );
+                if ( getPlayers().size() > 1 ) {
 
-                for ( Player toPlayer : getPlayers() ) {
-                    player.sendMessage( ChatArguments.fromFormatString( Translation.tr("{{GOLD}}[Game] {{RED}}%1 {{GOLD}}has died! {{RED}}%2 {{GOLD}}left...", player, player.getName(), getPlayers().size()) ) );
+                    player.sendMessage( ChatArguments.fromFormatString( Translation.tr("{{RED}}You have loos the Game!", player) ) );
+
+                    for ( Player toPlayer : getPlayers() ) {
+                        player.sendMessage( ChatArguments.fromFormatString( Translation.tr("{{GOLD}}[Game] {{RED}}%1 {{GOLD}}has died! {{RED}}%2 {{GOLD}}left...", player, player.getName(), getPlayers().size()) ) );
+                    }
+
+                } else {
+
+                    if ( getPlayers().size() == 1 ) {
+
+                        Player winner = getPlayers().get(0);
+                        winner.sendMessage( ChatArguments.fromFormatString( Translation.tr("{{GOLD}}You have won the Game!", winner) ) );
+                        //restorePlayer(winner);
+
+                    }
+
                 }
+
+                //restorePlayer( player );
 
             } else {
 
-                Player winner = getPlayers().get(0);
-                winner.sendMessage( ChatArguments.fromFormatString( Translation.tr("{{GOLD}}You have won the Game!", winner) ) );
-                restorePlayer(winner);
-            }
+                player.sendMessage( ChatArguments.fromFormatString( Translation.tr("{{RED}}You leave the Game!", player)) );
 
-            restorePlayer( player );
-        } else {
+                if ( player.equals( getOwner() ) ) {
 
-            player.sendMessage( ChatArguments.fromFormatString( Translation.tr("{{RED}}You leave the Game!", player)) );
+                    if ( getPlayers().size() > 0 ) {
+                        setOwner( getPlayers().get(0) );
+                    }
 
-            if ( player.equals( getOwner() ) ) {
-
-                if ( getPlayers().size() > 0 ) {
-                    setOwner( getPlayers().get(0) );
                 }
 
             }

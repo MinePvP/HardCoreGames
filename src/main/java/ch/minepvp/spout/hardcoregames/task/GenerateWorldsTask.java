@@ -52,16 +52,18 @@ public class GenerateWorldsTask implements Runnable{
 
         game.calculateP1AndP2();
 
+        /*
         // Generate Nether
         for (Player player : game.getPlayers() ) {
 
             if ( player.isOnline() ) {
-                player.sendMessage(ChatArguments.fromFormatString( Translation.tr("{{GOLD}}Starting World generation...", player) ) );
+                player.sendMessage(ChatArguments.fromFormatString( Translation.tr("{{GOLD}}Starting Nether generation...", player) ) );
             }
 
         }
 
         generateNether();
+        */
 
         // Start Game
         for ( Player player : game.getPlayers() ) {
@@ -71,6 +73,7 @@ public class GenerateWorldsTask implements Runnable{
             }
 
         }
+
 
         game.setStatus( GameStatus.RUNNING );
         game.getRandomSpawns();

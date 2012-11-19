@@ -13,6 +13,7 @@ import org.spout.api.lang.Translation;
 import org.spout.vanilla.event.player.PlayerDeathEvent;
 
 import ch.minepvp.spout.hardcoregames.HardCoreGames;
+import org.spout.vanilla.event.player.network.PlayerListEvent;
 import org.spout.vanilla.protocol.handler.player.EntityHealthChangeEvent;
 import org.spout.vanilla.source.HealthChangeCause;
 
@@ -40,7 +41,7 @@ public class PlayerListener implements Listener {
 
                 for ( Player toPlayer : game.getPlayers() ) {
 
-                    player.sendMessage(ChatArguments.fromFormatString(Translation.tr("[{{GOLD}}Game{{WHITE}}] %1 : %2", player, player.getName(), event.getMessage().getPlainString())));
+                    player.sendMessage(ChatArguments.fromFormatString(Translation.tr("[{{GOLD}}Game{{WHITE}}] %0 : %1", player, player.getName(), event.getMessage().getPlainString())));
 
                 }
 
@@ -69,7 +70,7 @@ public class PlayerListener implements Listener {
 
     }
 
-    @EventHandler void onPlayer( PlayerLeaveEvent event ) {
+    @EventHandler void onPlayerLeaveEvent( PlayerLeaveEvent event ) {
 
         Player player = event.getPlayer();
 
