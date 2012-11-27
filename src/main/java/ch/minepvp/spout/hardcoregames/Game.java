@@ -20,9 +20,13 @@ import org.spout.api.inventory.ItemStack;
 import org.spout.api.lang.Translation;
 import org.spout.api.scheduler.TaskPriority;
 import org.spout.vanilla.component.inventory.PlayerInventory;
-import org.spout.vanilla.component.living.passive.Human;
+import org.spout.vanilla.component.living.neutral.Human;
 import org.spout.vanilla.component.misc.HealthComponent;
+import org.spout.vanilla.component.misc.HungerComponent;
 import org.spout.vanilla.data.GameMode;
+import org.spout.vanilla.inventory.player.PlayerArmorInventory;
+import org.spout.vanilla.inventory.player.PlayerMainInventory;
+import org.spout.vanilla.inventory.player.PlayerQuickbar;
 import org.spout.vanilla.material.VanillaMaterials;
 import org.spout.vanilla.material.block.Solid;
 import org.spout.vanilla.source.HealthChangeCause;
@@ -38,6 +42,8 @@ public class Game {
 	
 	private World world;
 	private World nether;
+    private Point portalWorld;
+    private Point portalNether;
 	
 	private GameSize size;
     private Integer sizeInt;
@@ -280,6 +286,15 @@ public class Game {
     }
 
     /**
+     * Calculate the min Spawn Distance between the Players
+     */
+    private void calculateMinSpawnDistance() {
+
+        minSpawnDistance = ((chunkRadius * chunkRadius) * 16 ) / players.size();
+
+    }
+
+    /**
      * Calculate the ege Points of the Battlefield
      */
     public void calculateP1AndP2() {
@@ -308,7 +323,7 @@ public class Game {
 
             if ( player.isOnline() ) {
 
-                //savePlayer(player);
+                savePlayer(player);
                 setPlayerStatsForStart(player);
 
                 getWorld().getChunkFromBlock(saveSpawns.get(i));
@@ -420,13 +435,19 @@ public class Game {
     public void savePlayer( Player player ) {
 
         // Inventory
-        player.add(Human.class).getData().put("hcg_inventory",player.add(PlayerInventory.class).getClass());     // TODO PlayerInventory is broke...
+        player.getData().put(GameData.MAIN_INVENTORY ,player.get(PlayerInventory.class).getMain());
+        player.getData().put(GameData.ARMOR_INVENTORY ,player.get(PlayerInventory.class).getArmor());
+        player.getData().put(GameData.QUICKBAR_INVENTORY ,player.get(PlayerInventory.class).getQuickbar());
+
+
 
         // Health
-        player.add(Human.class).getData().put("hcg_health", player.add(HealthComponent.class).getHealth());
+        player.get(Human.class).getData().put(GameData.HEALTH, player.get(HealthComponent.class).getHealth());
+        player.get(Human.class).getData().put(GameData.FOOD, player.get(HungerComponent.class).getHunger());
+
 
         // Point
-        player.add(Human.class).getData().put("hcg_point", player.getTransform().getPosition());
+        player.get(Human.class).getData().put(GameData.POSITION, player.getTransform().getPosition());
 
     }
 
@@ -438,38 +459,38 @@ public class Game {
     private void setPlayerStatsForStart( Player player ) {
 
         // Clear Inventory
-        //player.add(PlayerInventory.class).clear();        // TODO this is broke... get e error on the MC Client
+        //player.get(PlayerInventory.class).clear();
 
-        player.add(Human.class).setGamemode(GameMode.SURVIVAL);
+        player.get(Human.class).setGamemode(GameMode.SURVIVAL);
 
         // Set Health and Food
-        player.add(HealthComponent.class).setHealth(health, HealthChangeCause.SPAWN);
-        // TODO set Food
+        player.get(HealthComponent.class).setHealth(health, HealthChangeCause.SPAWN);
+        player.get(HungerComponent.class).setHunger(food);
 
 
         // TODO set Items
 
         /*
         // Set Armor
-        player.add(PlayerInventory.class).getArmor().clear();
+        player.get(PlayerInventory.class).getArmor().clear();
 
 
         // TODO check ItemStack
 
         if ( armorHelmet != null ) {
-            player.add(PlayerInventory.class).getArmor().setHelmet(armorHelmet);
+            player.get(PlayerInventory.class).getArmor().setHelmet(armorHelmet);
         }
 
         if ( armorChestPlate != null ) {
-            player.add(PlayerInventory.class).getArmor().setChestPlate(armorChestPlate);
+            player.get(PlayerInventory.class).getArmor().setChestPlate(armorChestPlate);
         }
 
         if ( armorLeggings != null ) {
-            player.add(PlayerInventory.class).getArmor().setLeggings(armorLeggings);
+            player.get(PlayerInventory.class).getArmor().setLeggings(armorLeggings);
         }
 
         if ( armorBoots != null ) {
-            player.add(PlayerInventory.class).getArmor().setBoots(armorBoots);
+            player.get(PlayerInventory.class).getArmor().setBoots(armorBoots);
         }
         */
 
@@ -483,36 +504,39 @@ public class Game {
     public void restorePlayer( Player player ) {
 
         // Restore Inventory
-        PlayerInventory inventory = (PlayerInventory) player.add(Human.class).getData().get("hcg_inventory");
+        PlayerMainInventory mainInventory = player.getData().get(GameData.MAIN_INVENTORY);
+        PlayerArmorInventory armorInventory = player.getData().get(GameData.ARMOR_INVENTORY);
+        PlayerQuickbar quickbarInventory = player.getData().get(GameData.QUICKBAR_INVENTORY);
+
 
         // Armor
-        player.add(PlayerInventory.class).getArmor().clear();
-        player.add(PlayerInventory.class).getArmor().setBoots( inventory.getArmor().getBoots() );
-        player.add(PlayerInventory.class).getArmor().setLeggings(inventory.getArmor().getLeggings());
-        player.add(PlayerInventory.class).getArmor().setChestPlate(inventory.getArmor().getChestPlate());
-        player.add(PlayerInventory.class).getArmor().setHelmet(inventory.getArmor().getHelmet());
+        //player.get(PlayerInventory.class).getArmor().clear();
+        player.get(PlayerInventory.class).getArmor().setBoots(armorInventory.getBoots());
+        player.get(PlayerInventory.class).getArmor().setLeggings(armorInventory.getLeggings());
+        player.get(PlayerInventory.class).getArmor().setChestPlate(armorInventory.getChestPlate());
+        player.get(PlayerInventory.class).getArmor().setHelmet(armorInventory.getHelmet());
 
 
         // Main
-        player.add(PlayerInventory.class).getMain().clear();
+        //player.get(PlayerInventory.class).getMain().clear();
 
-        for ( int i = 0; i > inventory.getMain().size(); i++ ) {
-            player.add(PlayerInventory.class).getMain().set(i, inventory.getMain().get(i));
+        for ( int i = 0; i > mainInventory.size(); i++ ) {
+            player.get(PlayerInventory.class).getMain().set(i, mainInventory.get(i));
         }
 
         // Quickbar
-        player.add(PlayerInventory.class).getQuickbar().clear();
+        //player.get(PlayerInventory.class).getQuickbar().clear();
 
-        for ( int i = 0; i > inventory.getQuickbar().size(); i++ ) {
-            player.add(PlayerInventory.class).getQuickbar().set(i, inventory.getQuickbar().get(i));
+        for ( int i = 0; i > quickbarInventory.size(); i++ ) {
+            player.get(PlayerInventory.class).getQuickbar().set(i, quickbarInventory.get(i));
         }
 
         // Restore Healt
-        player.add(HealthComponent.class).setHealth( (Integer)player.add(Human.class).getData().get("hcg_health"), HealthChangeCause.SPAWN );
-        // TODO restore food
+        player.get(HealthComponent.class).setHealth(player.getData().get(GameData.HEALTH), HealthChangeCause.SPAWN);
+        player.get(HungerComponent.class).setHunger(player.getData().get(GameData.FOOD));
 
         // Teleport back
-        player.teleport( (Point)player.add(Human.class).getData().get("hcg_point") );
+        player.teleport( player.getData().get(GameData.POSITION) );
 
     }
 	
@@ -562,13 +586,13 @@ public class Game {
 
                         Player winner = getPlayers().get(0);
                         winner.sendMessage( ChatArguments.fromFormatString( Translation.tr("{{GOLD}}You have won the Game!", winner) ) );
-                        //restorePlayer(winner);
+                        restorePlayer(winner);
 
                     }
 
                 }
 
-                //restorePlayer( player );
+                restorePlayer( player );
 
             } else {
 
@@ -719,4 +743,21 @@ public class Game {
     public void setRegen(Boolean regen) {
         this.regen = regen;
     }
+
+    public Point getPortalWorld() {
+        return portalWorld;
+    }
+
+    public void setPortalWorld(Point portalWorld) {
+        this.portalWorld = portalWorld;
+    }
+
+    public Point getPortalNether() {
+        return portalNether;
+    }
+
+    public void setPortalNether(Point portalNether) {
+        this.portalNether = portalNether;
+    }
+
 }

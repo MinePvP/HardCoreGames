@@ -16,6 +16,7 @@ import org.spout.api.command.annotated.CommandPermissions;
 import org.spout.api.entity.Player;
 import org.spout.api.exception.CommandException;
 import org.spout.api.lang.Translation;
+import org.spout.vanilla.component.inventory.PlayerInventory;
 
 public class HardCoreGamesCommands {
 
@@ -289,6 +290,17 @@ public class HardCoreGamesCommands {
 
         player.sendMessage( "You are in World : " + player.getWorld().getName() );
         player.sendMessage( "Chunk : X " + player.getChunk().getX() + " Y " + player.getChunk().getY() + " Z " + player.getChunk().getZ() );
+
+    }
+
+    @Command(aliases = {"clear"}, usage = "", desc = "")
+    @CommandPermissions("hcg.clear")
+    public void clear(CommandContext args, CommandSource source) throws CommandException {
+
+        Player player = plugin.getEngine().getPlayer( source.getName(), true );
+
+        player.get(PlayerInventory.class).clear();
+        player.sendMessage("Inventory Cleared");
 
     }
 

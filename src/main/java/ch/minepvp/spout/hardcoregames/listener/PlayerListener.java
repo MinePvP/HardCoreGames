@@ -13,9 +13,6 @@ import org.spout.api.lang.Translation;
 import org.spout.vanilla.event.player.PlayerDeathEvent;
 
 import ch.minepvp.spout.hardcoregames.HardCoreGames;
-import org.spout.vanilla.event.player.network.PlayerListEvent;
-import org.spout.vanilla.protocol.handler.player.EntityHealthChangeEvent;
-import org.spout.vanilla.source.HealthChangeCause;
 
 public class PlayerListener implements Listener {
 	
@@ -41,9 +38,11 @@ public class PlayerListener implements Listener {
 
                 for ( Player toPlayer : game.getPlayers() ) {
 
-                    player.sendMessage(ChatArguments.fromFormatString(Translation.tr("[{{GOLD}}Game{{WHITE}}] %0 : %1", player, player.getName(), event.getMessage().getPlainString())));
+                    toPlayer.sendMessage(ChatArguments.fromFormatString(Translation.tr("[{{GOLD}}Game{{WHITE}}] %0 : %1", player, player.getName(), event.getMessage().getPlainString())));
 
                 }
+
+                event.setCancelled(true);
 
             }
 
@@ -82,29 +81,6 @@ public class PlayerListener implements Listener {
 
             if ( game.getPlayers().size() == 0 ) {
                 gameManager.removeGame(game);
-            }
-
-        }
-
-    }
-
-    @EventHandler
-    public void onPlayerFoodSaturationChangeEvent( EntityHealthChangeEvent event ) {
-
-        if ( event.getEntity() instanceof Player) {
-
-            Game game = gameManager.getGameByPlayer( (Player)event.getEntity() );
-
-            if ( game != null ) {
-
-                if ( event.getCause().equals( HealthChangeCause.REGENERATION ) ) {
-
-                    if ( game.getRegen() == false ) {
-                        event.setCancelled(true);
-                    }
-
-                }
-
             }
 
         }

@@ -9,6 +9,9 @@ import org.spout.api.event.EventHandler;
 import org.spout.api.event.Listener;
 import org.spout.api.lang.Translation;
 import org.spout.vanilla.event.entity.EntityDamageEvent;
+import org.spout.vanilla.event.entity.VanillaEntityTeleportEvent;
+import org.spout.vanilla.protocol.handler.player.EntityHealthChangeEvent;
+import org.spout.vanilla.source.HealthChangeCause;
 
 public class EntityListener implements Listener {
 
@@ -46,5 +49,73 @@ public class EntityListener implements Listener {
 
     }
 
+    @EventHandler
+    public void onEntityHealthChangeEvent( EntityHealthChangeEvent event ) {
+
+        if ( event.getEntity() instanceof Player) {
+
+            Game game = gameManager.getGameByPlayer( (Player)event.getEntity() );
+
+            if ( game != null ) {
+
+                if ( event.getCause().equals( HealthChangeCause.REGENERATION ) ) {
+
+                    if ( game.getRegen() == false ) {
+                        event.setCancelled(true);
+                    }
+
+                }
+
+            }
+
+        }
+
+    }
+
+    @EventHandler
+    public void onVanillaEntityTeleportEvent( VanillaEntityTeleportEvent event ) {
+
+        if (  event.getFrom().getWorld().getName().startsWith("hcg_") ) {
+
+            if ( event.getEntity() instanceof Player ) {
+
+                Player player = (Player) event.getEntity();
+                Game game = gameManager.getGameByPlayer(player);
+
+                switch ( event.getReason() ) {
+                    case PORTAL:
+
+                        if ( event.getFrom().getWorld().equals( game.getWorld() ) ) {
+
+                            if ( game.getPortalWorld() == null ) {
+                                game.setPortalWorld( event.getFrom() );
+                            }
+
+                            if ( game.getPortalNether() == null ) {
+                                event.setTo( game.getNether().getSpawnPoint().getPosition() );
+                            } else {
+                                event.setTo( game.getPortalNether() );
+                            }
+
+                        } else {
+
+                            if ( game.getPortalNether() == null ) {
+                                game.setPortalNether( event.getFrom() );
+                            }
+
+                            event.setTo( game.getPortalWorld() );
+
+                        }
+
+                    case CUSTOM:
+                        game.removePlayer(player);
+
+                }
+
+            }
+
+        }
+
+    }
 
 }
