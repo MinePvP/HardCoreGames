@@ -430,7 +430,7 @@ public class Game {
      * @param player
      */
     private void savePlayer( Player player ) {
-
+    /*
         // Inventory
         player.getData().put(GameData.MAIN_INVENTORY ,player.get(PlayerInventory.class).getMain());
         player.getData().put(GameData.ARMOR_INVENTORY ,player.get(PlayerInventory.class).getArmor());
@@ -442,7 +442,7 @@ public class Game {
 
         // Point
         player.get(Human.class).getData().put(GameData.POSITION, player.getTransform().getPosition());
-
+    */
     }
 
     /**
