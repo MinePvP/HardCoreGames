@@ -1,19 +1,14 @@
 package ch.minepvp.spout.hardcoregames;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.util.ArrayList;
-
 import ch.minepvp.spout.hardcoregames.config.Config;
 import ch.minepvp.spout.hardcoregames.config.GameDifficulty;
 import ch.minepvp.spout.hardcoregames.config.GameSize;
 import ch.minepvp.spout.hardcoregames.config.GameStatus;
+import ch.minepvp.spout.hardcoregames.task.GenerateWorldsTask;
 import ch.minepvp.spout.hardcoregames.task.NoobProtectionTask;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.entity.Player;
 import org.spout.api.geo.World;
-
-import ch.minepvp.spout.hardcoregames.task.GenerateWorldsTask;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.inventory.ItemStack;
@@ -24,12 +19,13 @@ import org.spout.vanilla.component.living.neutral.Human;
 import org.spout.vanilla.component.misc.HealthComponent;
 import org.spout.vanilla.component.misc.HungerComponent;
 import org.spout.vanilla.data.GameMode;
-import org.spout.vanilla.inventory.player.PlayerArmorInventory;
-import org.spout.vanilla.inventory.player.PlayerMainInventory;
-import org.spout.vanilla.inventory.player.PlayerQuickbar;
 import org.spout.vanilla.material.VanillaMaterials;
 import org.spout.vanilla.material.block.Solid;
 import org.spout.vanilla.source.HealthChangeCause;
+
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.ArrayList;
 
 public class Game {
 	
@@ -224,6 +220,7 @@ public class Game {
         }
 
         calculateChunkRadius();
+        calculateMinSpawnDistance();
 
 		GenerateWorldsTask task1 = new GenerateWorldsTask(this);
 		plugin.getEngine().getScheduler().scheduleSyncDelayedTask(plugin, task1, TaskPriority.HIGH);
@@ -241,31 +238,29 @@ public class Game {
      */
     private Long getNoobProtectionTime() {
 
-        Long intervall = null;
+        Long interval = null;
 
         if ( difficulty.equals(GameDifficulty.EASY) ) {
-            intervall = Config.GAME_DIFFICULTY_EASY_NOOBPROTECTION_TIME.getLong();
+            interval = Config.GAME_DIFFICULTY_EASY_NOOBPROTECTION_TIME.getLong();
 
         } else if ( difficulty.equals(GameDifficulty.NORMAL) ) {
-            intervall = Config.GAME_DIFFICULTY_NORMAL_NOOBPROTECTION_TIME.getLong();
+            interval = Config.GAME_DIFFICULTY_NORMAL_NOOBPROTECTION_TIME.getLong();
 
         } else if ( difficulty.equals(GameDifficulty.HARD) ) {
-            intervall = Config.GAME_DIFFICULTY_HARD_NOOBPROTECTION_TIME.getLong();
+            interval = Config.GAME_DIFFICULTY_HARD_NOOBPROTECTION_TIME.getLong();
 
         } else if ( difficulty.equals(GameDifficulty.HARDCORE) ) {
-            intervall = Config.GAME_DIFFICULTY_HARDCORE_NOOBPROTECTION_TIME.getLong();
+            interval = Config.GAME_DIFFICULTY_HARDCORE_NOOBPROTECTION_TIME.getLong();
 
         }
 
-        plugin.getLogger().info("NooProtection Time : " + ( intervall * 20 ) * 60 );
-
-        return ( intervall * 20 ) * 60;
+        return ( interval * 20 ) * 60;
     }
 
     /**
      * Calculate the Chunk Radius for the Game over the Player Size
      */
-    public void calculateChunkRadius() {
+    private void calculateChunkRadius() {
 
         int chunks = (players.size() * sizeInt);
 
@@ -290,7 +285,7 @@ public class Game {
      */
     private void calculateMinSpawnDistance() {
 
-        minSpawnDistance = ((chunkRadius * chunkRadius) * 16 ) / players.size();
+        minSpawnDistance = (((chunkRadius * chunkRadius) * 16 ) / players.size() ) / 2;
 
     }
 
@@ -384,6 +379,8 @@ public class Game {
 
                 if ( checkSpawnPoint( point ) ) {
 
+                    point = new Point(world, x , point.getBlockY() + 3 , z);
+
                     plugin.getLogger().info("Fount Spawn Point X : " + point.getBlockX() + " Y : " + point.getBlockY() + " Z : " + point.getBlockZ());
 
                     saveSpawnPoint = point;
@@ -432,19 +429,16 @@ public class Game {
      *
      * @param player
      */
-    public void savePlayer( Player player ) {
+    private void savePlayer( Player player ) {
 
         // Inventory
         player.getData().put(GameData.MAIN_INVENTORY ,player.get(PlayerInventory.class).getMain());
         player.getData().put(GameData.ARMOR_INVENTORY ,player.get(PlayerInventory.class).getArmor());
         player.getData().put(GameData.QUICKBAR_INVENTORY ,player.get(PlayerInventory.class).getQuickbar());
 
-
-
         // Health
         player.get(Human.class).getData().put(GameData.HEALTH, player.get(HealthComponent.class).getHealth());
         player.get(Human.class).getData().put(GameData.FOOD, player.get(HungerComponent.class).getHunger());
-
 
         // Point
         player.get(Human.class).getData().put(GameData.POSITION, player.getTransform().getPosition());
@@ -464,6 +458,7 @@ public class Game {
         player.get(Human.class).setGamemode(GameMode.SURVIVAL);
 
         // Set Health and Food
+        player.get(HealthComponent.class).setMaxHealth(20);
         player.get(HealthComponent.class).setHealth(health, HealthChangeCause.SPAWN);
         player.get(HungerComponent.class).setHunger(food);
 
@@ -501,8 +496,9 @@ public class Game {
      *
      * @param player
      */
-    public void restorePlayer( Player player ) {
+    private void restorePlayer( Player player ) {
 
+    /*
         // Restore Inventory
         PlayerMainInventory mainInventory = player.getData().get(GameData.MAIN_INVENTORY);
         PlayerArmorInventory armorInventory = player.getData().get(GameData.ARMOR_INVENTORY);
@@ -537,6 +533,9 @@ public class Game {
 
         // Teleport back
         player.teleport( player.getData().get(GameData.POSITION) );
+    */
+
+        player.teleport( plugin.getEngine().getWorld("world").getSpawnPoint() );
 
     }
 	
@@ -572,9 +571,9 @@ public class Game {
 
             if ( getStatus().equals( GameStatus.RUNNING) ) {
 
-                if ( getPlayers().size() > 1 ) {
+                player.sendMessage( ChatArguments.fromFormatString( Translation.tr("{{RED}}You have loos the Game!", player) ) );
 
-                    player.sendMessage( ChatArguments.fromFormatString( Translation.tr("{{RED}}You have loos the Game!", player) ) );
+                if ( getPlayers().size() > 1 ) {
 
                     for ( Player toPlayer : getPlayers() ) {
                         player.sendMessage( ChatArguments.fromFormatString( Translation.tr("{{GOLD}}[Game] {{RED}}%1 {{GOLD}}has died! {{RED}}%2 {{GOLD}}left...", player, player.getName(), getPlayers().size()) ) );
@@ -586,13 +585,16 @@ public class Game {
 
                         Player winner = getPlayers().get(0);
                         winner.sendMessage( ChatArguments.fromFormatString( Translation.tr("{{GOLD}}You have won the Game!", winner) ) );
+                        players.remove(winner);
                         restorePlayer(winner);
 
+                        plugin.getGameManager().removeGame(this);
                     }
 
                 }
 
-                restorePlayer( player );
+                players.remove(player);
+                restorePlayer(player);
 
             } else {
 

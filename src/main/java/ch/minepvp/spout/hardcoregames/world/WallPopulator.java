@@ -9,7 +9,7 @@ import java.util.Random;
 
 public class WallPopulator extends Populator{
 
-    Game game;
+    private Game game;
 
     public WallPopulator( Game game ) {
         this.game = game;
@@ -17,11 +17,6 @@ public class WallPopulator extends Populator{
 
     @Override
     public void populate(Chunk chunk, Random random) {
-
-        // Wall height in Chunks
-        if ( chunk.getY() > 6) {
-            return;
-        }
 
         // Is the Chunk between the two Points?
         if ( chunk.getX() >= game.getP1().getChunkX() && chunk.getX() <= game.getP2().getChunkX() &&

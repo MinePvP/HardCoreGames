@@ -1,6 +1,7 @@
 package ch.minepvp.spout.hardcoregames.listener;
 
 import ch.minepvp.spout.hardcoregames.Game;
+import ch.minepvp.spout.hardcoregames.HardCoreGames;
 import ch.minepvp.spout.hardcoregames.config.GameStatus;
 import ch.minepvp.spout.hardcoregames.manager.GameManager;
 import org.spout.api.chat.ChatArguments;
@@ -11,8 +12,6 @@ import org.spout.api.event.player.PlayerChatEvent;
 import org.spout.api.event.player.PlayerLeaveEvent;
 import org.spout.api.lang.Translation;
 import org.spout.vanilla.event.player.PlayerDeathEvent;
-
-import ch.minepvp.spout.hardcoregames.HardCoreGames;
 
 public class PlayerListener implements Listener {
 	

@@ -1,19 +1,19 @@
 package ch.minepvp.spout.hardcoregames.config;
 
-import java.io.File;
-
 import org.spout.api.exception.ConfigurationException;
 import org.spout.api.util.config.ConfigurationHolder;
 import org.spout.api.util.config.ConfigurationHolderConfiguration;
 import org.spout.api.util.config.yaml.YamlConfiguration;
 
+import java.io.File;
+
 public class Config extends ConfigurationHolderConfiguration{
 		
     // Size
-    public static final ConfigurationHolder GAME_SIZE_TINY = new ConfigurationHolder(9, "Game", "Size", "Tiny");
-    public static final ConfigurationHolder GAME_SIZE_SMALL = new ConfigurationHolder(16, "Game", "Size", "Small");
-    public static final ConfigurationHolder GAME_SIZE_MEDIUM = new ConfigurationHolder(25, "Game", "Size", "Medium");
-    public static final ConfigurationHolder GAME_SIZE_BIG = new ConfigurationHolder(36, "Game", "Size", "Big");
+    public static final ConfigurationHolder GAME_SIZE_TINY = new ConfigurationHolder(36, "Game", "Size", "Tiny");
+    public static final ConfigurationHolder GAME_SIZE_SMALL = new ConfigurationHolder(49, "Game", "Size", "Small");
+    public static final ConfigurationHolder GAME_SIZE_MEDIUM = new ConfigurationHolder(64, "Game", "Size", "Medium");
+    public static final ConfigurationHolder GAME_SIZE_BIG = new ConfigurationHolder(81, "Game", "Size", "Big");
 
     // Difficulty
     // Easy

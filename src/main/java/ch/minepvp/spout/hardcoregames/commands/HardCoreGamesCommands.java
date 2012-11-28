@@ -1,12 +1,11 @@
 package ch.minepvp.spout.hardcoregames.commands;
 
 import ch.minepvp.spout.hardcoregames.Game;
+import ch.minepvp.spout.hardcoregames.HardCoreGames;
 import ch.minepvp.spout.hardcoregames.config.GameDifficulty;
 import ch.minepvp.spout.hardcoregames.config.GameSize;
 import ch.minepvp.spout.hardcoregames.config.GameStatus;
 import ch.minepvp.spout.hardcoregames.manager.GameManager;
-import ch.minepvp.spout.hardcoregames.HardCoreGames;
-import org.spout.api.Server;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.command.CommandContext;
@@ -163,6 +162,11 @@ public class HardCoreGamesCommands {
             return;
         }
 
+        if ( args.length() < 1 ) {
+            source.sendMessage( ChatArguments.fromFormatString(Translation.tr("{{RED}}/game join <player>", source)) );
+            return;
+        }
+
         Player player2 = plugin.getEngine().getPlayer( args.getString(0), true );
 
         if (  player2 == null ) {
@@ -252,7 +256,7 @@ public class HardCoreGamesCommands {
 
         Game game = new Game(player, GameDifficulty.EASY, GameSize.TINY);
 
-        Player second = null;
+        Player second;
 
         if ( player.getName().equalsIgnoreCase("surtic86") ) {
 
@@ -278,8 +282,6 @@ public class HardCoreGamesCommands {
 
         gameManager.addGame(game);
         game.startGame();
-
-
     }
 
     @Command(aliases = {"world"}, usage = "", desc = "")

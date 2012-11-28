@@ -56,7 +56,7 @@ public class GameManager {
         games.remove(game);
     }
 
-    public boolean deleteFolder(File file) {
+    private boolean deleteFolder(File file) {
 
         if (file.exists()) {
 

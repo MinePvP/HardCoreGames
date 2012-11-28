@@ -23,5 +23,17 @@
 
 ## Changelog
 
+### Version 0.3
+- more Bugfixes
+- more Cleanups
+- prepare for porting to Nether
+- prepare restore Player Date after Game
+
+### Version 0.2
+- many Bugfixes
+- some cleanups
+- add Random Spawn
+- add NoobProtection (Time after start Player can Attack eatch other)
+
 ### Version 0.1
 - initial Releas

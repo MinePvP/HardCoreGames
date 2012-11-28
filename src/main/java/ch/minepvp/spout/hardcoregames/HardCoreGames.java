@@ -1,8 +1,10 @@
 package ch.minepvp.spout.hardcoregames;
 
-import java.util.logging.Level;
-
 import ch.minepvp.spout.hardcoregames.commands.HardCoreGamesCommand;
+import ch.minepvp.spout.hardcoregames.config.Config;
+import ch.minepvp.spout.hardcoregames.listener.BlockListener;
+import ch.minepvp.spout.hardcoregames.listener.EntityListener;
+import ch.minepvp.spout.hardcoregames.listener.PlayerListener;
 import ch.minepvp.spout.hardcoregames.manager.GameManager;
 import org.spout.api.UnsafeMethod;
 import org.spout.api.command.CommandRegistrationsFactory;
@@ -12,10 +14,7 @@ import org.spout.api.command.annotated.SimpleInjector;
 import org.spout.api.exception.ConfigurationException;
 import org.spout.api.plugin.CommonPlugin;
 
-import ch.minepvp.spout.hardcoregames.config.Config;
-import ch.minepvp.spout.hardcoregames.listener.BlockListener;
-import ch.minepvp.spout.hardcoregames.listener.EntityListener;
-import ch.minepvp.spout.hardcoregames.listener.PlayerListener;
+import java.util.logging.Level;
 
 public class HardCoreGames extends CommonPlugin {
 	
@@ -24,11 +23,6 @@ public class HardCoreGames extends CommonPlugin {
 	private Config config;
 
     private GameManager gameManager;
-
-	// Listener
-    private BlockListener blockListener;
-    private EntityListener entityListener;
-    private PlayerListener playerListener;
 	
 	@Override
 	@UnsafeMethod
@@ -38,24 +32,6 @@ public class HardCoreGames extends CommonPlugin {
 		
 		// Initial Config
         config = new Config( getDataFolder() );
-
-        gameManager = new GameManager();
-
-        // Listener
-        playerListener = new PlayerListener();
-        blockListener = new BlockListener();
-        entityListener = new EntityListener();
-
-        // Register Listener
-        getEngine().getEventManager().registerEvents(playerListener, this);
-        getEngine().getEventManager().registerEvents(blockListener, this);
-        getEngine().getEventManager().registerEvents(entityListener, this);
-
-
-        //Register commands
-        CommandRegistrationsFactory<Class<?>> commandRegFactory = new AnnotatedCommandRegistrationFactory(new SimpleInjector(this), new SimpleAnnotatedCommandExecutorFactory());
-        getEngine().getRootCommand().addSubCommands(this, HardCoreGamesCommand.class, commandRegFactory);
-
 
         getLogger().info("Loaded");
 	}
@@ -70,6 +46,18 @@ public class HardCoreGames extends CommonPlugin {
         } catch (ConfigurationException e) {
             getLogger().log(Level.WARNING, "Error loading HardCoreGames configuration: ", e);
         }
+
+        gameManager = new GameManager();
+
+        // Register Listener
+        getEngine().getEventManager().registerEvents(new PlayerListener(), this);
+        getEngine().getEventManager().registerEvents(new BlockListener(), this);
+        getEngine().getEventManager().registerEvents(new EntityListener(), this);
+
+
+        //Register commands
+        CommandRegistrationsFactory<Class<?>> commandRegFactory = new AnnotatedCommandRegistrationFactory(new SimpleInjector(this), new SimpleAnnotatedCommandExecutorFactory());
+        getEngine().getRootCommand().addSubCommands(this, HardCoreGamesCommand.class, commandRegFactory);
 
 
         getLogger().info("Enabled");

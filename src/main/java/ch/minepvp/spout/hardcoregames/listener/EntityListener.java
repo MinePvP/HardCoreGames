@@ -1,8 +1,8 @@
 package ch.minepvp.spout.hardcoregames.listener;
 
 import ch.minepvp.spout.hardcoregames.Game;
-import ch.minepvp.spout.hardcoregames.manager.GameManager;
 import ch.minepvp.spout.hardcoregames.HardCoreGames;
+import ch.minepvp.spout.hardcoregames.manager.GameManager;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.entity.Player;
 import org.spout.api.event.EventHandler;
@@ -60,7 +60,7 @@ public class EntityListener implements Listener {
 
                 if ( event.getCause().equals( HealthChangeCause.REGENERATION ) ) {
 
-                    if ( game.getRegen() == false ) {
+                    if ( !game.getRegen() ) {
                         event.setCancelled(true);
                     }
 

@@ -1,5 +1,7 @@
 package ch.minepvp.spout.hardcoregames.task;
 
+import ch.minepvp.spout.hardcoregames.Game;
+import ch.minepvp.spout.hardcoregames.HardCoreGames;
 import ch.minepvp.spout.hardcoregames.config.GameDifficulty;
 import ch.minepvp.spout.hardcoregames.config.GameStatus;
 import ch.minepvp.spout.hardcoregames.world.WallPopulator;
@@ -14,9 +16,6 @@ import org.spout.api.math.IntVector3;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.OutwardIterator;
-
-import ch.minepvp.spout.hardcoregames.Game;
-import ch.minepvp.spout.hardcoregames.HardCoreGames;
 import org.spout.vanilla.component.world.sky.NetherSky;
 import org.spout.vanilla.component.world.sky.NormalSky;
 import org.spout.vanilla.data.Difficulty;
@@ -52,7 +51,7 @@ public class GenerateWorldsTask implements Runnable{
 
         game.calculateP1AndP2();
 
-        /*
+
         // Generate Nether
         for (Player player : game.getPlayers() ) {
 
@@ -63,7 +62,17 @@ public class GenerateWorldsTask implements Runnable{
         }
 
         generateNether();
-        */
+
+        // Searching for Spawns
+        for ( Player player : game.getPlayers() ) {
+
+            if ( player.isOnline() ) {
+                player.sendMessage( ChatArguments.fromFormatString( Translation.tr("{{GOLD}}Searching gor spawns..", player) ) );
+            }
+
+        }
+        game.getRandomSpawns();
+
 
         // Start Game
         for ( Player player : game.getPlayers() ) {
@@ -76,12 +85,11 @@ public class GenerateWorldsTask implements Runnable{
 
 
         game.setStatus( GameStatus.RUNNING );
-        game.getRandomSpawns();
         game.teleportPlayersToWorld();
 
 	}
 
-    public void generateWorld() {
+    private void generateWorld() {
 
         NormalGenerator normalGenerator = new NormalGenerator();
         normalGenerator.addPopulators( new WallPopulator(game) );
@@ -151,7 +159,7 @@ public class GenerateWorldsTask implements Runnable{
 
     }
 
-	public void generateNether() {
+	private void generateNether() {
 
         NetherGenerator netherGenerator = new NetherGenerator();
         netherGenerator.addPopulators( new WallPopulator(game) );
